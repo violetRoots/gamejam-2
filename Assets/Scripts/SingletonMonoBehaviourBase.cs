@@ -34,8 +34,6 @@ public abstract class SingletonMonoBehaviourBase<T> : MonoBehaviour where T : Si
         _instance = instance;
         var go = _instance.gameObject;
         go.name = typeof(T).ToString(); // So it has no "(Clone)" in name
-        if (Application.isPlaying)
-            DontDestroyOnLoad(go);
         _instance.Init();
     }
 

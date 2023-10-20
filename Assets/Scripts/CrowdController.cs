@@ -115,5 +115,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     private void CheckGameOver()
     {
         if (_humans.Count > 0) return;
+
+        UIManager.Instance.SetVisibleGameOver(true);
     }
 }
