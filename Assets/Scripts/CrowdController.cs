@@ -7,6 +7,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 {
     [SerializeField] private float movementSpeed = 100.0f;
     [SerializeField] private float startShooterRadius = 1.0f;
+    [SerializeField] private float gunOffset = 1.0f;
     [Min(1)]
     [SerializeField] private int startShootersCount;
     [Min(1)]
@@ -37,6 +38,8 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         UpdateShooterDestinationPointByInput();
         UpdateShootersRotationByInput();
         UpdatePosByInput();
+
+        CheckGameOver();
     }
 
     private void SpawnUnits(Human human, int count)
@@ -47,7 +50,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void SpawnUnit(Human human)
     {
-        var newHuman = Instantiate(human, Random.insideUnitCircle * 5.0f, Quaternion.identity);
+        var newHuman = Instantiate(human, ((Vector2) transform.position) + Random.insideUnitCircle * 5.0f, Quaternion.identity);
         AddHuman(newHuman);
     }
 
@@ -71,12 +74,19 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void UpdateShootersRotationByInput()
     {
-        foreach(var shooter in _shooters)
+        for(var i = 0; i < _shooters.Count; i++)
         {
+            var shooter = _shooters[i];
+
             var pos = InputManager.Instance.WorldMousePos;
             pos.z = shooter.transform.position.z;
+
+            var angle = Vector3.SignedAngle(shooter.transform.position - pos, Vector3.right, Vector3.forward);
+            pos += Quaternion.Euler(0.0f, 0.0f, angle) * Vector2.up * gunOffset * i;
+            angle = Vector3.SignedAngle(shooter.transform.position - pos, Vector3.right, Vector3.forward);
+
             var newRot = shooter.transform.rotation.eulerAngles;
-            newRot.z = -(Vector3.SignedAngle(shooter.transform.position - pos, Vector3.right, Vector3.forward) + 180.0f);
+            newRot.z = -(angle + 180.0f);
             shooter.transform.rotation = Quaternion.Euler(newRot);
         }
     }
@@ -100,5 +110,10 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
         _humans.Remove(human);
         human.Die();
+    }
+
+    private void CheckGameOver()
+    {
+        if (_humans.Count > 0) return;
     }
 }
