@@ -25,6 +25,8 @@ public class DynamicEnemy : Enemy
 
     public void Die()
     {
+        AudioManager.Instance.PlayEnemySound();
+
         Instantiate(bloodEfect, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }

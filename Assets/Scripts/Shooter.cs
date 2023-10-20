@@ -36,6 +36,8 @@ public class Shooter : Human
     {
         var newBullet = Instantiate(bullet, bulletOrigin.position, Quaternion.identity);
         newBullet.Init(body.right, bulletsSpeed);
+
+        AudioManager.Instance.PlayShootSound();
     }
 
     public void SetBodyRotation(Vector3 rotationAngles)

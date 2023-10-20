@@ -32,18 +32,24 @@ public class UIManager : SingletonMonoBehaviourBase<UIManager>
     {
         SetGameTime(value);
         menu.SetActive(value);
+
+        UpdateMusic(value);
     }
 
     public void SetVisiblePause(bool value)
     {
         SetGameTime(value);
         pause.SetActive(value);
+
+        AudioManager.Instance.SetMusicVolume(value ? 0.5f : 1.0f);
     }
 
     public void SetVisibleGameOver(bool value)
     {
         SetGameTime(value);
         gameOver.SetActive(value);
+
+        UpdateMusic(value);
     }
 
     public void SetGameTime(bool value)
@@ -64,5 +70,13 @@ public class UIManager : SingletonMonoBehaviourBase<UIManager>
         if (value && !InputManager.Instance.GameplayInputEnabled) return;
 
         SetVisiblePause(value);
+    }
+
+    private void UpdateMusic(bool value)
+    {
+        if (value)
+            AudioManager.Instance.SetMenuMusic();
+        else
+            AudioManager.Instance.SetGameplayMusic();
     }
 }

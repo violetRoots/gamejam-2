@@ -51,6 +51,8 @@ public abstract class Human : MonoBehaviour
 
     public virtual void Die()
     {
+        AudioManager.Instance.PlayHumanSound();
+
         Instantiate(bloodEffect, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
