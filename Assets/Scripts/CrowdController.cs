@@ -87,7 +87,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
             var newRot = shooter.transform.rotation.eulerAngles;
             newRot.z = -(angle + 180.0f);
-            shooter.transform.rotation = Quaternion.Euler(newRot);
+            shooter.SetBodyRotation(newRot);
         }
     }
 

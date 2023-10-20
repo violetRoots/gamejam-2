@@ -5,11 +5,21 @@ using UnityEngine;
 public abstract class Human : MonoBehaviour
 {
     [SerializeField] protected float speed;
+    [SerializeField] private float stepAnimationValue = 0.02f;
+
+    [Space]
+    [SerializeField] private Animator walkAnimator;
+    [SerializeField] private AnimationClip idleAnimation;
+    [SerializeField] private AnimationClip walkAnimation;
 
     protected Rigidbody2D _rigidbody2D;
     protected CircleCollider2D _circleCollider;
     protected Transform _distinationPoint;
     protected bool _inCrowd;
+
+    private Vector3 _previousPos;
+    private int _walkSwitchCount;
+    private int _idleSwitchCount;
 
     protected virtual void Awake()
     {
@@ -22,6 +32,13 @@ public abstract class Human : MonoBehaviour
         if (!_inCrowd) return;
 
         MoveToDestinationPoint();
+    }
+
+    protected virtual void Update()
+    {
+        UpdateAnimation();
+
+        _previousPos = transform.position;
     }
 
     public virtual void AddInCrowd()
@@ -45,5 +62,29 @@ public abstract class Human : MonoBehaviour
         if (hit.collider.TryGetComponent(out Human human) && human != this) return;
 
         transform.position = Vector3.MoveTowards(transform.position, _distinationPoint.position, speed * Time.fixedDeltaTime);
+    }
+
+    private void UpdateAnimation()
+    {
+        _walkSwitchCount = IsCanWalkOrIdleAnimation().Item1 ? _walkSwitchCount + 1 : 0;
+        _idleSwitchCount = IsCanWalkOrIdleAnimation().Item2 ? _idleSwitchCount + 1 : 0;
+
+        if (_walkSwitchCount > 10)
+        {
+            walkAnimator.Play(walkAnimation.name);
+        }
+        else if(_idleSwitchCount > 10)
+        {
+            walkAnimator.Play(idleAnimation.name);
+        }
+    }
+
+    private (bool, bool) IsCanWalkOrIdleAnimation()
+    {
+        var canWalk = Vector2.Distance(transform.position, _previousPos) >= stepAnimationValue * Time.deltaTime;
+        var isOnIdle = walkAnimator.GetCurrentAnimatorStateInfo(0).IsName(idleAnimation.name);
+        var isOnWalk = walkAnimator.GetCurrentAnimatorStateInfo(0).IsName(walkAnimation.name);
+
+        return (canWalk && !isOnWalk && isOnIdle, !canWalk && isOnWalk && !isOnIdle);
     }
 }
