@@ -42,7 +42,7 @@ public class Shooter : Human
     {
         body.rotation = Quaternion.Euler(rotationAngles);
 
-        UpdateBodySprite(rotationAngles);
+        //UpdateBodySprite(rotationAngles);
     }
 
     private void UpdateBodySprite(Vector3 rotationAngles)

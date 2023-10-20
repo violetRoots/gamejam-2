@@ -1,10 +1,15 @@
+using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 {
+    public bool IsWin { get; set; }
+
     [SerializeField] private float movementSpeed = 100.0f;
     [SerializeField] private float startShooterRadius = 1.0f;
     [SerializeField] private float gunOffset = 1.0f;
@@ -14,18 +19,28 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     [SerializeField] private int startIlluminatorsCount;
 
     [Space]
+    [SerializeField] private int maxIlluminatorsCount = 10;
+    [MinMaxSlider(0.0f, 10.0f)]
+    [SerializeField] private Vector2 vignetteBounds;
+
+    [Space]
     [SerializeField] private Transform humansContainer;
     [SerializeField] private Transform shootersDestinationPoint;
     [SerializeField] private Transform illuminatorsDestinationPoint;
 
+    [SerializeField] private GameObject gameplayCamera;
+    [SerializeField] private GameObject endCamera;
+
     [Space]
     [SerializeField] private Shooter shooter;
     [SerializeField] private Illuminator illuminator;
+    [SerializeField] Volume volume;
 
     private readonly List<Human> _humans = new();
 
     private List<Shooter> _shooters => _humans.Where(h => h is Shooter).Cast<Shooter>().ToList();
     private List<Illuminator> _illuminators => _humans.Where(h => h is Illuminator).Cast<Illuminator>().ToList();
+    private List<Human> _savedHumans => _humans.Where(h => h.InSafe).ToList();
 
     private void Start()
     {
@@ -40,6 +55,9 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         UpdatePosByInput();
 
         CheckGameOver();
+
+        UpdatePostProcess();
+        UpdateCameras();
     }
 
     private void SpawnUnits(Human human, int count)
@@ -117,5 +135,42 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         if (_humans.Count > 0) return;
 
         UIManager.Instance.SetVisibleGameOver(true);
+    }
+
+    private void UpdatePostProcess()
+    {
+        if (!IsWin)
+        {
+            var newIntensity = Mathf.Lerp(vignetteBounds.y, vignetteBounds.x, (float)_illuminators.Count / maxIlluminatorsCount);
+            volume.profile.TryGet(out Vignette vignette);
+            vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, newIntensity, Time.deltaTime);
+        }
+        else
+        {
+            volume.profile.TryGet(out Vignette vignette);
+            vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, 0.5f, Time.deltaTime);
+        }
+    }
+
+    public void SetNewDestinationForAll(Transform destination)
+    {
+        foreach (var human in _humans)
+            human.SetDestinationPoint(destination);
+    }
+
+    public bool SaveHuman(Human human)
+    {
+        human.InSafe = true;
+        human.gameObject.SetActive(false);
+
+        IsWin = _savedHumans.Count >= _humans.Count;
+
+        return IsWin;
+    }
+
+    private void UpdateCameras()
+    {
+        gameplayCamera.SetActive(!IsWin);
+        endCamera.SetActive(IsWin);
     }
 }

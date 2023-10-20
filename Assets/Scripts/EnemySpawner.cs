@@ -7,9 +7,9 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnDistance = 10.0f;
     
     [Space]
-    [SerializeField] private Enemy enemy;
+    [SerializeField] private DynamicEnemy enemy;
 
-    private Enemy _spawnedEnemy;
+    private DynamicEnemy _spawnedEnemy;
     private Transform _crowdTransform;
 
     private void Start()

@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   stepAnimationValue: 1
+  bloodEffect: {fileID: 2154560535303170377, guid: 43ba6d937d4578e49a836564270755f4, type: 3}
   walkAnimator: {fileID: 3369806918870089703}
   idleAnimation: {fileID: 7400000, guid: 89758a159e661e84f806f03906addb4e, type: 2}
   walkAnimation: {fileID: 7400000, guid: c958cc382b39f12448be95e29d9e88fd, type: 2}
@@ -345,7 +346,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6524016562385513205}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.665, y: -0.005, z: 0}
+  m_LocalPosition: {x: 0.887, y: 0.033, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

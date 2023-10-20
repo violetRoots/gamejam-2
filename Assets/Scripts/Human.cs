@@ -4,8 +4,11 @@ using UnityEngine;
 
 public abstract class Human : MonoBehaviour
 {
+    public bool InSafe { get; set; }
+
     [SerializeField] protected float speed;
     [SerializeField] private float stepAnimationValue = 0.02f;
+    [SerializeField] private GameObject bloodEffect;
 
     [Space]
     [SerializeField] private Animator walkAnimator;
@@ -48,6 +51,7 @@ public abstract class Human : MonoBehaviour
 
     public virtual void Die()
     {
+        Instantiate(bloodEffect, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 

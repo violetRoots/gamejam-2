@@ -33,7 +33,7 @@ public class Bullet : MonoBehaviour
         {
             CrowdController.Instance.Kill(human);
         }
-        else if(collision.TryGetComponent(out Enemy enemy))
+        else if(collision.TryGetComponent(out DynamicEnemy enemy))
         {
             enemy.Die();
         }
