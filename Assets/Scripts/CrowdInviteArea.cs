@@ -10,7 +10,11 @@ public class CrowdInviteArea : MonoBehaviour
         if (!collision.TryGetComponent(out LostedHumanGroup lostedHumanGroup)) return;
 
         foreach (var human in lostedHumanGroup.LostedHumans)
+        {
+            if(human == null) continue;
+
             CrowdController.Instance.AddHuman(human);
+        }
 
         Destroy(lostedHumanGroup.gameObject);
     }
