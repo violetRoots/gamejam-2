@@ -16,6 +16,7 @@ public class SaveTrigger : MonoBehaviour
             oldHut.gameObject.SetActive(false);
             newHut.gameObject.SetActive(true);
 
+            UIManager.Instance.SetVisibleEndLevel(true);
             AudioManager.Instance.SetEndLevelMusic();
         }
     }

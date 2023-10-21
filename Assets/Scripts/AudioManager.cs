@@ -13,6 +13,7 @@ public class AudioManager : SingletonMonoBehaviourBase<AudioManager>
     [SerializeField] private AudioSource shootSource;
     [SerializeField] private AudioSource enemySource;
     [SerializeField] private AudioSource humanSource;
+    [SerializeField] private AudioSource gameOverSource;
 
     public void SetGameplayMusic()
     {
@@ -47,6 +48,11 @@ public class AudioManager : SingletonMonoBehaviourBase<AudioManager>
     public void PlayEnemySound()
     {
         enemySource.Play();
+    }
+
+    public void PlayGameOverSound()
+    {
+        gameOverSource.Play();
     }
 
     private void ChangeMusic(AudioClip clip)

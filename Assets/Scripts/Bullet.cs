@@ -31,7 +31,8 @@ public class Bullet : MonoBehaviour
 
         if (collision.TryGetComponent(out Human human))
         {
-            CrowdController.Instance.Kill(human);
+            if (!CrowdController.Instance.TryKill(human, true))
+                human.Die();
         }
         else if(collision.TryGetComponent(out DynamicEnemy enemy))
         {

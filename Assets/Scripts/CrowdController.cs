@@ -9,6 +9,11 @@ using UnityEngine.Rendering.Universal;
 public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 {
     public bool IsWin { get; set; }
+    public bool IsGameOver { get; set; }
+
+    public int DiedCount { get; private set; }
+    public int KilledCount { get; private set; }
+    public int SavedCount => _savedHumans.Count;
 
     [SerializeField] private float movementSpeed = 100.0f;
     [SerializeField] private float startShooterRadius = 1.0f;
@@ -122,17 +127,25 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
             return illuminatorsDestinationPoint;
     }
 
-    public void Kill(Human human)
+    public bool TryKill(Human human, bool killedByHuman)
     {
-        if (!_humans.Contains(human)) return;
+        if (!_humans.Contains(human)) return false;
 
         _humans.Remove(human);
         human.Die();
+
+        DiedCount++;
+        if (killedByHuman)
+            KilledCount++;
+
+        return true;
     }
 
     private void CheckGameOver()
     {
-        if (_humans.Count > 0) return;
+        if (_humans.Count > 0 || IsGameOver) return;
+
+        IsGameOver = true;
 
         UIManager.Instance.SetVisibleGameOver(true);
     }

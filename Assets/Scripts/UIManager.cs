@@ -8,6 +8,7 @@ public class UIManager : SingletonMonoBehaviourBase<UIManager>
     [SerializeField] private GameObject menu;
     [SerializeField] private GameObject pause;
     [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameObject endLevel;
 
     private void Start()
     {
@@ -49,7 +50,15 @@ public class UIManager : SingletonMonoBehaviourBase<UIManager>
         SetGameTime(value);
         gameOver.SetActive(value);
 
+        if(value)
+            AudioManager.Instance.PlayGameOverSound();
+
         UpdateMusic(value);
+    }
+
+    public void SetVisibleEndLevel(bool value)
+    {
+        endLevel.gameObject.SetActive(value);
     }
 
     public void SetGameTime(bool value)

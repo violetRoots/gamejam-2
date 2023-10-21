@@ -8,6 +8,6 @@ public abstract class Enemy : MonoBehaviour
     {
         if (!collision.collider.TryGetComponent(out Human human)) return;
 
-        CrowdController.Instance.Kill(human);
+        CrowdController.Instance.TryKill(human, false);
     }
 }
