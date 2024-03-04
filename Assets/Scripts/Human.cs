@@ -6,6 +6,7 @@ using UnityEngine;
 public class Human : MonoBehaviour
 {
     [SerializeField] protected float speed;
+    [SerializeField] protected float lerpSpeed = 5.0f;
 
     [ReadOnly(true)]
     [SerializeField] protected CircleCollider2D _circleCollider;
@@ -13,7 +14,7 @@ public class Human : MonoBehaviour
     [ReadOnly(true)]
     [SerializeField] protected Rigidbody2D _humanRigidbody;
     protected Vector3 _distinationPoint;
-    
+
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -42,14 +43,18 @@ public class Human : MonoBehaviour
 
     private void MoveToDestinationPoint()
     {
-        var hit = Physics2D.Raycast(transform.position, _distinationPoint - transform.position, _circleCollider.radius + speed * 1000.0f * Time.fixedDeltaTime);
-        if (hit.collider.TryGetComponent(out Human human) && human != this)
+        if (Vector2.Distance(transform.position, _distinationPoint) < 0.1f)
         {
-            Debug.Log(hit.collider.name);
             _humanRigidbody.velocity = Vector3.zero;
             return;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, _distinationPoint, speed * Time.fixedDeltaTime);
+        var velocity = (_distinationPoint - transform.position).normalized * GetSpeed();
+        _humanRigidbody.velocity = Vector2.Lerp(_humanRigidbody.velocity, velocity, lerpSpeed * Time.fixedDeltaTime);
+    }
+
+    protected virtual float GetSpeed()
+    {
+        return speed;
     }
 }
