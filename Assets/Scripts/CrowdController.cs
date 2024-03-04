@@ -1,189 +1,172 @@
 using NaughtyAttributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
-public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
+public class CrowdController : MonoBehaviour
 {
-    public bool IsWin { get; set; }
-    public bool IsGameOver { get; set; }
+    private const float RadiusToPositionPointMultiplier = 2.5f;
 
-    public int DiedCount { get; private set; }
-    public int KilledCount { get; private set; }
-    public int SavedCount => _savedHumans.Count;
+    [SerializeField] private float moveSpeed = 1.0f;
 
-    [SerializeField] private float movementSpeed = 100.0f;
-    [SerializeField] private float startShooterRadius = 1.0f;
-    [SerializeField] private float gunOffset = 1.0f;
-    [Min(1)]
-    [SerializeField] private int startShootersCount;
-    [Min(1)]
-    [SerializeField] private int startIlluminatorsCount;
+    [MinMaxSlider(1.0f, 50.0f)]
+    [SerializeField] private Vector2 radiusBounds;
+    [MinMaxSlider(1, 200)]
+    [SerializeField] private Vector2Int positionPointsCountBounds;
+    [SerializeField] private RotatablePositionPoint rotatablePositionPointPrefab;
+    [SerializeField] private StaticPositionPoint staticPositionPointPrefab;
+    [SerializeField] private Transform rotatablePositionPointsContainer;
+    [SerializeField] private Transform staticPositionPointsContainer;
+    [SerializeField] private Transform moveContainer;
 
-    [Space]
-    [SerializeField] private int maxIlluminatorsCount = 10;
-    [MinMaxSlider(0.0f, 10.0f)]
-    [SerializeField] private Vector2 vignetteBounds;
+    private InputManager _inputManager;
 
-    [Space]
-    [SerializeField] private Transform humansContainer;
-    [SerializeField] private Transform shootersDestinationPoint;
-    [SerializeField] private Transform illuminatorsDestinationPoint;
+    private List<CrowdHumanInfo> _humanInfos = new List<CrowdHumanInfo>();
+    private List<RotatablePositionPoint> _rotatablePositionPoints = new List<RotatablePositionPoint>();
+    private List<StaticPositionPoint> _staticPositionPoints = new List<StaticPositionPoint>();
 
-    [SerializeField] private GameObject gameplayCamera;
-    [SerializeField] private GameObject endCamera;
+    private float Radius 
+    {
+        get => _radius;
+        set => _radius = Mathf.Clamp(value, radiusBounds.x, radiusBounds.y);
+    }
+    private float _radius;
 
-    [Space]
-    [SerializeField] private Shooter shooter;
-    [SerializeField] private Illuminator illuminator;
-    [SerializeField] Volume volume;
-
-    private readonly List<Human> _humans = new();
-
-    private List<Shooter> _shooters => _humans.Where(h => h is Shooter).Cast<Shooter>().ToList();
-    private List<Illuminator> _illuminators => _humans.Where(h => h is Illuminator).Cast<Illuminator>().ToList();
-    private List<Human> _savedHumans => _humans.Where(h => h.InSafe).ToList();
+    public int RotatablePositionPointsCount
+    {
+        get => _postionPointsCount;
+        set => _postionPointsCount = Mathf.Clamp(value, positionPointsCountBounds.x, positionPointsCountBounds.y);
+    }
+    private int _postionPointsCount;
 
     private void Start()
     {
-        SpawnUnits(shooter, startShootersCount);
-        SpawnUnits(illuminator, startIlluminatorsCount);
+        _inputManager = InputManager.Instance;
+
+        InitHumans();
     }
 
     private void Update()
     {
-        UpdateShooterDestinationPointByInput();
-        UpdateShootersRotationByInput();
-        UpdatePosByInput();
-
-        CheckGameOver();
-
-        UpdatePostProcess();
-        UpdateCameras();
+        MoveCrowd();
+        RotateCrowd();
+        UpdateRadiusByHumanCount();
+        UpdateRotatablePositionPointsCount();
+        UpdateStaticPositionPointsCount();
+        MoveRotatableHumans();
+        MoveStaticHumans();
     }
 
-    private void SpawnUnits(Human human, int count)
+    private void MoveCrowd()
     {
-        for (var i = 0; i < count; i++)
-            SpawnUnit(human);
+        moveContainer.Translate(_inputManager.MoveDirection * moveSpeed * Time.deltaTime);
     }
 
-    private void SpawnUnit(Human human)
+    private void RotateCrowd()
     {
-        var newHuman = Instantiate(human, ((Vector2) transform.position) + Random.insideUnitCircle * 5.0f, Quaternion.identity);
-        AddHuman(newHuman);
+        var angle = -Vector2.SignedAngle(_inputManager.RotateDirection, Vector3.right);
+        rotatablePositionPointsContainer.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
-    public void AddHuman(Human newHuman)
+    private void MoveStaticHumans()
     {
-        newHuman.transform.SetParent(humansContainer);
-
-        newHuman.AddInCrowd();
-        newHuman.SetDestinationPoint(GetHumanDestinationPoint(newHuman));
-
-        _humans.Add(newHuman);
-    }
-
-    private void UpdateShooterDestinationPointByInput()
-    {
-        var oldPos = shootersDestinationPoint.position;
-        var newPos = (InputManager.Instance.WorldMousePos - transform.position).normalized * startShooterRadius;
-        newPos.z = oldPos.z;
-        shootersDestinationPoint.localPosition = newPos;
-    }
-
-    private void UpdateShootersRotationByInput()
-    {
-        for(var i = 0; i < _shooters.Count; i++)
+        var staticHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is StaticHuman).ToArray();
+        for (var i = 0; i < staticHumanInfos.Length; i++)
         {
-            var shooter = _shooters[i];
-
-            var pos = InputManager.Instance.WorldMousePos;
-            pos.z = shooter.transform.position.z;
-
-            var angle = Vector3.SignedAngle(shooter.transform.position - pos, Vector3.right, Vector3.forward);
-            pos += Quaternion.Euler(0.0f, 0.0f, angle) * Vector2.up * gunOffset * i;
-            angle = Vector3.SignedAngle(shooter.transform.position - pos, Vector3.right, Vector3.forward);
-
-            var newRot = shooter.transform.rotation.eulerAngles;
-            newRot.z = -(angle + 180.0f);
-            shooter.SetBodyRotation(newRot);
+            var destinationPos = moveContainer.transform.position;
+            staticHumanInfos[i].human.SetDestinationPosition(destinationPos);
         }
     }
 
-    private void UpdatePosByInput()
+    private void MoveRotatableHumans()
     {
-        transform.position += InputManager.Instance.MovementInputVector * movementSpeed * Time.deltaTime;
-    }
-
-    private Transform GetHumanDestinationPoint(Human human)
-    {
-        if (human is Shooter)
-            return shootersDestinationPoint;
-        else
-            return illuminatorsDestinationPoint;
-    }
-
-    public bool TryKill(Human human, bool killedByHuman)
-    {
-        if (!_humans.Contains(human)) return false;
-
-        _humans.Remove(human);
-        human.Die();
-
-        DiedCount++;
-        if (killedByHuman)
-            KilledCount++;
-
-        return true;
-    }
-
-    private void CheckGameOver()
-    {
-        if (_humans.Count > 0 || IsGameOver) return;
-
-        IsGameOver = true;
-
-        UIManager.Instance.SetVisibleGameOver(true);
-    }
-
-    private void UpdatePostProcess()
-    {
-        if (!IsWin)
+        var rotatableHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is RotatableHuman).ToArray();
+        for (var i = 0; i < rotatableHumanInfos.Length; i++)
         {
-            var newIntensity = Mathf.Lerp(vignetteBounds.y, vignetteBounds.x, (float)_illuminators.Count / maxIlluminatorsCount);
-            volume.profile.TryGet(out Vignette vignette);
-            vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, newIntensity, Time.deltaTime);
-        }
-        else
-        {
-            volume.profile.TryGet(out Vignette vignette);
-            vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, 0.5f, Time.deltaTime);
+            var destinationPos = _rotatablePositionPoints[i].transform.position;
+            rotatableHumanInfos[i].human.SetDestinationPosition(destinationPos);
         }
     }
 
-    public void SetNewDestinationForAll(Transform destination)
+    private void InitHumans()
     {
-        foreach (var human in _humans)
-            human.SetDestinationPoint(destination);
+        var humans = GetComponentsInChildren<Human>();
+        for (var i = 0; i < humans.Length; i++)
+        {
+            AddHuman(humans[i]);
+        }
     }
 
-    public bool SaveHuman(Human human)
+    private void UpdateRadiusByHumanCount()
     {
-        human.InSafe = true;
-        human.gameObject.SetActive(false);
-
-        IsWin = _savedHumans.Count >= _humans.Count;
-
-        return IsWin;
+        Radius = Mathf.Sqrt(((float)_humanInfos.Count) / Mathf.PI);
     }
 
-    private void UpdateCameras()
+    private void UpdateRotatablePositionPointsCount()
     {
-        gameplayCamera.SetActive(!IsWin);
-        endCamera.SetActive(IsWin);
+        for (var i = 0; i < _rotatablePositionPoints.Count; i++)
+        {
+            Destroy(_rotatablePositionPoints[i]);
+        }
+        _rotatablePositionPoints.Clear();
+
+        RotatablePositionPointsCount = (int)(2 * Mathf.PI * Radius * RadiusToPositionPointMultiplier);
+
+        for (var i = 0; i < RotatablePositionPointsCount; i++)
+        {
+            var positionPoint = Instantiate(rotatablePositionPointPrefab, rotatablePositionPointsContainer);
+            _rotatablePositionPoints.Add(positionPoint);
+        }
+
+        var angle = Mathf.Rad2Deg * Mathf.PI * 2.0f / RotatablePositionPointsCount;
+        for (int i = 0; i < RotatablePositionPointsCount; i++)
+        {
+            var index = i % 2 == 0 ? RotatablePositionPointsCount - 1 - i : i;
+            _rotatablePositionPoints[i].transform.localPosition = Quaternion.Euler(0, 0, angle * index) * Vector3.right * Radius;
+        }
     }
+
+    private void UpdateStaticPositionPointsCount()
+    {
+        for (var i = 0; i < _staticPositionPoints.Count; i++)
+        {
+            Destroy(_staticPositionPoints[i]);
+        }
+        _staticPositionPoints.Clear();
+
+        var firstPositionPoint = Instantiate(staticPositionPointPrefab, staticPositionPointsContainer);
+        _staticPositionPoints.Add(firstPositionPoint);
+
+        var test = 2;
+        for (var i = 1; i < (int) (Radius * test); i++)
+        {
+            var pointsCount = (int)(2 * Mathf.PI * (Radius / test) * i * RadiusToPositionPointMultiplier);
+
+            var angle = Mathf.Rad2Deg * Mathf.PI * 2.0f / pointsCount;
+            for (var j = 0; j < pointsCount; j++)
+            {
+                var index = j % 2 == 0 ? pointsCount - 1 - j : j;
+                var positionPoint = Instantiate(staticPositionPointPrefab, staticPositionPointsContainer);
+                positionPoint.transform.localPosition = Quaternion.Euler(0, 0, angle * index) * Vector3.right * (Radius / test) * i;
+                _staticPositionPoints.Add(positionPoint);
+            }
+        }
+    }
+
+    private void AddHuman(Human human)
+    {
+        var humanInfo = new CrowdHumanInfo()
+        {
+            human = human
+        };
+
+        _humanInfos.Add(humanInfo);
+    }
+}
+
+public class CrowdHumanInfo
+{
+    public Human human;
 }

@@ -1,96 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
-public abstract class Human : MonoBehaviour
+public class Human : MonoBehaviour
 {
-    public bool InSafe { get; set; }
-
     [SerializeField] protected float speed;
-    [SerializeField] private float stepAnimationValue = 0.02f;
-    [SerializeField] private GameObject bloodEffect;
 
-    [Space]
-    [SerializeField] private Animator walkAnimator;
-    [SerializeField] private AnimationClip idleAnimation;
-    [SerializeField] private AnimationClip walkAnimation;
+    [ReadOnly(true)]
+    [SerializeField] protected CircleCollider2D _circleCollider;
 
-    protected Rigidbody2D _rigidbody2D;
-    protected CircleCollider2D _circleCollider;
-    protected Transform _distinationPoint;
-    protected bool _inCrowd;
+    [ReadOnly(true)]
+    [SerializeField] protected Rigidbody2D _humanRigidbody;
+    protected Vector3 _distinationPoint;
+    
 
-    private Vector3 _previousPos;
-    private int _walkSwitchCount;
-    private int _idleSwitchCount;
-
-    protected virtual void Awake()
+#if UNITY_EDITOR
+    private void OnValidate()
     {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
         _circleCollider = GetComponent<CircleCollider2D>();
+        _humanRigidbody = GetComponent<Rigidbody2D>();
     }
+#endif
 
-    protected virtual void FixedUpdate()
-    {
-        if (!_inCrowd) return;
-
-        MoveToDestinationPoint();
-    }
-
-    protected virtual void Update()
-    {
-        UpdateAnimation();
-
-        _previousPos = transform.position;
-    }
-
-    public virtual void AddInCrowd()
-    {
-        _inCrowd = true;
-    }
-
-    public virtual void Die()
-    {
-        AudioManager.Instance.PlayHumanSound();
-
-        Instantiate(bloodEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
-
-    public void SetDestinationPoint(Transform destinationPoint)
+    public void SetDestinationPosition(Vector3 destinationPoint)
     {
         _distinationPoint = destinationPoint;
     }
 
+    private void FixedUpdate()
+    {
+        MoveToDestinationPoint();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!collision.collider.TryGetComponent(out Human human)) return;
+
+        _humanRigidbody.velocity = Vector3.zero;
+    }
+
     private void MoveToDestinationPoint()
     {
-        var hit = Physics2D.Raycast(transform.position, _distinationPoint.position - transform.position, _circleCollider.radius + speed * Time.fixedDeltaTime);
-        if (hit.collider.TryGetComponent(out Human human) && human != this) return;
-
-        transform.position = Vector3.MoveTowards(transform.position, _distinationPoint.position, speed * Time.fixedDeltaTime);
-    }
-
-    private void UpdateAnimation()
-    {
-        _walkSwitchCount = IsCanWalkOrIdleAnimation().Item1 ? _walkSwitchCount + 1 : 0;
-        _idleSwitchCount = IsCanWalkOrIdleAnimation().Item2 ? _idleSwitchCount + 1 : 0;
-
-        if (_walkSwitchCount > 10)
+        var hit = Physics2D.Raycast(transform.position, _distinationPoint - transform.position, _circleCollider.radius + speed * 1000.0f * Time.fixedDeltaTime);
+        if (hit.collider.TryGetComponent(out Human human) && human != this)
         {
-            walkAnimator.Play(walkAnimation.name);
+            Debug.Log(hit.collider.name);
+            _humanRigidbody.velocity = Vector3.zero;
+            return;
         }
-        else if(_idleSwitchCount > 10)
-        {
-            walkAnimator.Play(idleAnimation.name);
-        }
-    }
 
-    private (bool, bool) IsCanWalkOrIdleAnimation()
-    {
-        var canWalk = Vector2.Distance(transform.position, _previousPos) >= stepAnimationValue * Time.deltaTime;
-        var isOnIdle = walkAnimator.GetCurrentAnimatorStateInfo(0).IsName(idleAnimation.name);
-        var isOnWalk = walkAnimator.GetCurrentAnimatorStateInfo(0).IsName(walkAnimation.name);
-
-        return (canWalk && !isOnWalk && isOnIdle, !canWalk && isOnWalk && !isOnIdle);
+        transform.position = Vector3.MoveTowards(transform.position, _distinationPoint, speed * Time.fixedDeltaTime);
     }
 }
