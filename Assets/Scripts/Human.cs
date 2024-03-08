@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Human : MonoBehaviour
 {
-    [SerializeField] protected float speed;
+    [SerializeField] protected float baseSpeed;
     [SerializeField] protected float lerpSpeed = 5.0f;
 
     [ReadOnly(true)]
@@ -15,6 +16,8 @@ public class Human : MonoBehaviour
     [SerializeField] protected Rigidbody2D _humanRigidbody;
     protected Vector3 _distinationPoint;
 
+    protected Vector3 _velocity;
+    protected Vector3 _previousVelocity;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -29,9 +32,12 @@ public class Human : MonoBehaviour
         _distinationPoint = destinationPoint;
     }
 
+    protected virtual void Update() { }
+
     private void FixedUpdate()
     {
-        MoveToDestinationPoint();
+        Move();
+        Rotate();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -41,7 +47,7 @@ public class Human : MonoBehaviour
         _humanRigidbody.velocity = Vector3.zero;
     }
 
-    private void MoveToDestinationPoint()
+    protected virtual void Move()
     {
         if (Vector2.Distance(transform.position, _distinationPoint) < 0.1f)
         {
@@ -49,12 +55,20 @@ public class Human : MonoBehaviour
             return;
         }
 
-        var velocity = (_distinationPoint - transform.position).normalized * GetSpeed();
-        _humanRigidbody.velocity = Vector2.Lerp(_humanRigidbody.velocity, velocity, lerpSpeed * Time.fixedDeltaTime);
+        _velocity = (_distinationPoint - transform.position).normalized * GetSpeed();
+
+        _humanRigidbody.velocity = Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
+
+        _previousVelocity = _velocity;
+    }
+
+    protected virtual void Rotate()
+    {
+
     }
 
     protected virtual float GetSpeed()
     {
-        return speed;
+        return baseSpeed;
     }
 }
