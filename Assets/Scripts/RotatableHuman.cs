@@ -28,9 +28,12 @@ public class RotatableHuman : Human
 
     protected override float GetSpeed()
     {
-        if(_inputManager.RotateDirection.magnitude > 0)
+        if (_inputManager.RotateDirection.magnitude > 0)
         {
-            return speedOnRotate * _inputManager.RotateDirection.magnitude;
+            if(Vector2.Distance(transform.position, _distinationPoint) > 2.0f)
+                return speedOnRotate * _inputManager.RotateDirection.magnitude;
+            else
+                return baseSpeed * _inputManager.MoveDirection.magnitude;
         }
         else if (_inputManager.MoveDirection.magnitude > 0)
         {

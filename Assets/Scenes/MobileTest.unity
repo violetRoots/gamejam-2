@@ -1930,7 +1930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62fff80c71c03847b3fc7ab4afaa114, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
+  moveSpeed: 2
   lerpMoveSpeed: 2
   lerpTranslation: 1
   radiusBounds: {x: 1, y: 50}

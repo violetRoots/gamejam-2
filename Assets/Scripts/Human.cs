@@ -11,6 +11,7 @@ public class Human : MonoBehaviour
     [SerializeField] protected float baseSpeed;
     [SerializeField] protected float lerpSpeed = 5.0f;
     [SerializeField] protected float dampMultiplier = 1.0f;
+    [SerializeField] protected float stoppingDistance = 0.5f;
 
     [ReadOnly(true)]
     [SerializeField] protected CircleCollider2D _circleCollider;
@@ -65,16 +66,7 @@ public class Human : MonoBehaviour
 
     protected virtual void Move()
     {
-        var stoppingDistance = 0.5f;
-
-        if (Vector2.Distance(transform.position, _distinationPoint) < stoppingDistance)
-        {
-            _targetVelocity = Vector3.zero;
-        }
-        else
-        {
-            _targetVelocity = (_distinationPoint - transform.position).normalized * GetSpeed();
-        }
+        _targetVelocity = (_distinationPoint - transform.position).normalized * GetSpeed();
 
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
 

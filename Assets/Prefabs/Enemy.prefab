@@ -131,6 +131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cccf1c0343135224ca12a247d9456785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 100
+  dampMultiplier: 1
+  castRadius: 5
+  enemyRigidbody: {fileID: 4623109054373496346}
 --- !u!61 &4623109054373496345
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -177,4 +181,4 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 7
+  m_Constraints: 4

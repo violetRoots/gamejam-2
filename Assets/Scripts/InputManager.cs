@@ -16,7 +16,18 @@ public class InputManager : SingletonMonoBehaviourBase<InputManager>
 
     private void Update()
     {
-        MoveDirection = _uiManager.MoveJoystick.Direction;
+        Vector2 movedir;
+        if(_uiManager.MoveJoystick.Direction.magnitude > 0)
+        {
+            movedir = _uiManager.MoveJoystick.Direction;
+        }
+        else
+        {
+            movedir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            movedir = Vector2.ClampMagnitude(movedir, 1.0f);
+        }
+
+        MoveDirection = movedir;
         RotateDirection = _uiManager.RotateJoystick.Direction;
     }
 }
