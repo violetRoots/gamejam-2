@@ -136,6 +136,7 @@ MonoBehaviour:
   baseSpeed: 4
   lerpSpeed: 100
   dampMultiplier: 7
+  stoppingDistance: 0.5
   _circleCollider: {fileID: 987193250908754039}
   _humanRigidbody: {fileID: 2549399427659867087}
   speedOnRotate: 7

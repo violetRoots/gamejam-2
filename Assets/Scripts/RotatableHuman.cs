@@ -30,10 +30,12 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude > 0)
         {
-            if(Vector2.Distance(transform.position, _distinationPoint) > 2.0f)
+            if (Vector2.Distance(transform.position, _distinationPoint) > 2.0f)
                 return speedOnRotate * _inputManager.RotateDirection.magnitude;
+            else if (Vector2.Distance(transform.position, _distinationPoint) > 0.5f)
+                return baseSpeed * _inputManager.RotateDirection.magnitude;
             else
-                return baseSpeed * _inputManager.MoveDirection.magnitude;
+                return 0;
         }
         else if (_inputManager.MoveDirection.magnitude > 0)
         {
