@@ -44,7 +44,7 @@ public class RotatableHuman : Human
 
     protected override void Rotate()
     {
-        if (_velocity.magnitude <= 0) return;
+        if (_inputManager.RotateDirection.magnitude <= 0) return;
 
         transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection));
     }

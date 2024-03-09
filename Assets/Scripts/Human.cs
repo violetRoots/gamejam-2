@@ -4,20 +4,26 @@ using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(CircleCollider2D))]
 public class Human : MonoBehaviour
 {
     [SerializeField] protected float baseSpeed;
     [SerializeField] protected float lerpSpeed = 5.0f;
+    [SerializeField] protected float dampMultiplier = 1.0f;
 
     [ReadOnly(true)]
     [SerializeField] protected CircleCollider2D _circleCollider;
 
     [ReadOnly(true)]
     [SerializeField] protected Rigidbody2D _humanRigidbody;
-    protected Vector3 _distinationPoint;
 
-    protected Vector3 _velocity;
-    protected Vector3 _previousVelocity;
+    protected CrowdController _crowdController;
+
+    protected Vector3 _distinationPoint;
+    protected Vector3 _targetVelocity;
+    protected Vector3 _currentVelocity;
+    protected Vector3 _velocityDamp;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -27,39 +33,52 @@ public class Human : MonoBehaviour
     }
 #endif
 
-    public void SetDestinationPosition(Vector3 destinationPoint)
+    protected virtual void Awake()
     {
-        _distinationPoint = destinationPoint;
+        _crowdController = CrowdController.Instance;
     }
 
     protected virtual void Update() { }
 
     private void FixedUpdate()
     {
+        if (!IsInCrowd()) return;
+
         Move();
         Rotate();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void SetDestinationPosition(Vector3 destinationPoint)
     {
-        if (!collision.collider.TryGetComponent(out Human human)) return;
+        _distinationPoint = destinationPoint;
+    }
 
-        _humanRigidbody.velocity = Vector3.zero;
+    public void Die()
+    {
+        if (IsInCrowd())
+        {
+            _crowdController.RemoveHuman(this);
+        }
+
+        Destroy(gameObject);
     }
 
     protected virtual void Move()
     {
-        if (Vector2.Distance(transform.position, _distinationPoint) < 0.1f)
+        var stoppingDistance = 0.5f;
+
+        if (Vector2.Distance(transform.position, _distinationPoint) < stoppingDistance)
         {
-            _humanRigidbody.velocity = Vector3.zero;
-            return;
+            _targetVelocity = Vector3.zero;
+        }
+        else
+        {
+            _targetVelocity = (_distinationPoint - transform.position).normalized * GetSpeed();
         }
 
-        _velocity = (_distinationPoint - transform.position).normalized * GetSpeed();
+        _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
 
-        _humanRigidbody.velocity = Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
-
-        _previousVelocity = _velocity;
+        _humanRigidbody.velocity = _currentVelocity;
     }
 
     protected virtual void Rotate()
@@ -70,5 +89,10 @@ public class Human : MonoBehaviour
     protected virtual float GetSpeed()
     {
         return baseSpeed;
+    }
+
+    private bool IsInCrowd()
+    {
+        return _crowdController.HasHuman(this);
     }
 }

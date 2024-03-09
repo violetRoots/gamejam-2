@@ -134,11 +134,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseSpeed: 4
-  lerpSpeed: 10
+  lerpSpeed: 100
+  dampMultiplier: 7
   _circleCollider: {fileID: 987193250908754039}
   _humanRigidbody: {fileID: 2549399427659867087}
   speedOnRotate: 7
   rechargeTime: 0.75
+  bulletCastRadius: 0.5
+  bulletCastDistance: 2
   bulletContainer: {fileID: 1235864947050133836}
   bulletPrefab: {fileID: 3029767028681060272, guid: 8617ba919b484f241b17517631dbdf64, type: 3}
 --- !u!58 &987193250908754039

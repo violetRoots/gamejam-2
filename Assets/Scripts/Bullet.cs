@@ -35,6 +35,20 @@ public class Bullet : MonoBehaviour
         Move();
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.TryGetComponent(out Enemy enemy))
+        {
+            enemy.Die();
+            Destroy(gameObject);
+        }
+        else if(collision.TryGetComponent(out Human human))
+        {
+            human.Die();
+            Destroy(gameObject);
+        }
+    }
+
     private void Move()
     {
         bulletRigidbody.velocity = _direction * Vector3.right * speed * Time.fixedDeltaTime;

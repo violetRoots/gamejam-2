@@ -6,7 +6,8 @@ using UnityEngine;
 public class StaticHuman : Human
 {
     [SerializeField] private float repulsionCastRadius = 20.0f;
-    [SerializeField] private float lerpSpeedChangeMultiplier = 1.0f;
+
+    [SerializeField] protected float lerpSpeedChangeMultiplier = 1.0f;
 
     protected override void Move()
     {
@@ -15,7 +16,7 @@ public class StaticHuman : Human
 
         if (rotatableHits.Length > 0)
         {
-            _velocity = rotatableHits[0].normal * GetSpeed();
+            _targetVelocity = rotatableHits[0].normal * GetSpeed();
         }
         else
         {
@@ -25,13 +26,13 @@ public class StaticHuman : Human
                 return;
             }
 
-            _velocity = (_distinationPoint - transform.position).normalized * GetSpeed();
+            _targetVelocity = (_distinationPoint - transform.position).normalized * GetSpeed();
         }
 
-        _velocity = Vector3.Lerp(_previousVelocity, _velocity, Time.fixedDeltaTime * lerpSpeedChangeMultiplier);
+        _targetVelocity = Vector3.Lerp(_currentVelocity, _targetVelocity, Time.fixedDeltaTime * lerpSpeedChangeMultiplier);
 
-        _humanRigidbody.velocity = Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
+        _humanRigidbody.velocity = _targetVelocity;// Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
 
-        _previousVelocity = _velocity;
+        _currentVelocity = _targetVelocity;
     }
 }

@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CrowdController : MonoBehaviour
+public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 {
     [SerializeField] private float moveSpeed = 1.0f;
     [SerializeField] private float lerpMoveSpeed = 1.0f;
+    [SerializeField] private float lerpTranslation = 1.0f;
 
     [MinMaxSlider(1.0f, 50.0f)]
     [SerializeField] private Vector2 radiusBounds;
@@ -19,6 +20,7 @@ public class CrowdController : MonoBehaviour
     [SerializeField] private Transform rotatablePositionPointsContainer;
     [SerializeField] private Transform staticPositionPointsContainer;
     [SerializeField] private Transform moveContainer;
+    [SerializeField] private Transform humansContainer;
 
     private InputManager _inputManager;
 
@@ -28,12 +30,7 @@ public class CrowdController : MonoBehaviour
     private List<RotatablePositionPoint> _rotatablePositionPoints = new List<RotatablePositionPoint>();
     private List<StaticPositionPoint> _staticPositionPoints = new List<StaticPositionPoint>();
 
-    private float Radius 
-    {
-        get => _radius;
-        set => _radius = Mathf.Clamp(value, radiusBounds.x, radiusBounds.y);
-    }
-    private float _radius;
+    private Vector3 _translation;
 
     public int RotatablePositionPointsCount
     {
@@ -48,17 +45,12 @@ public class CrowdController : MonoBehaviour
     private void Start()
     {
         _inputManager = InputManager.Instance;
-
-        InitHumans();
-
-        UpdateStaticPositionPointsCount();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         MoveCrowd();
         RotateCrowd();
-        UpdateRadiusByHumanCount();
         UpdateRotatablePositionPointsCount();
 
         MoveRotatableHumans();
@@ -67,12 +59,14 @@ public class CrowdController : MonoBehaviour
 
     private void MoveCrowd()
     {
-        var translation = moveContainer.position + (Vector3) _inputManager.MoveDirection * moveSpeed;
-        moveContainer.position = Vector3.Lerp(moveContainer.position, translation, lerpMoveSpeed * Time.smoothDeltaTime);
+        _translation = moveContainer.position + (Vector3) _inputManager.MoveDirection * moveSpeed;
+        moveContainer.position = Vector3.Lerp(moveContainer.position, _translation, lerpMoveSpeed * Time.fixedDeltaTime);
     }
 
     private void RotateCrowd()
     {
+        if (_inputManager.RotateDirection.magnitude <= 0) return;
+
         var angle = -Vector2.SignedAngle(_inputManager.RotateDirection, Vector3.right);
         rotatablePositionPointsContainer.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
@@ -95,20 +89,6 @@ public class CrowdController : MonoBehaviour
             var destinationPos = _rotatablePositionPoints[i].transform.position;
             rotatableHumanInfos[i].human.SetDestinationPosition(destinationPos);
         }
-    }
-
-    private void InitHumans()
-    {
-        var humans = GetComponentsInChildren<Human>();
-        for (var i = 0; i < humans.Length; i++)
-        {
-            AddHuman(humans[i]);
-        }
-    }
-
-    private void UpdateRadiusByHumanCount()
-    {
-        Radius = Mathf.Sqrt(((float)_humanInfos.Count) / Mathf.PI);
     }
 
     private void UpdateRotatablePositionPointsCount()
@@ -142,6 +122,12 @@ public class CrowdController : MonoBehaviour
             Destroy(_staticPositionPoints[i]);
         }
         _staticPositionPoints.Clear();
+
+        for (var i = 0; i < _rotatablePositionPoints.Count; i++)
+        {
+            Destroy(_rotatablePositionPoints[i]);
+        }
+        _rotatablePositionPoints.Clear();
 
         _circlesCount = 0;
 
@@ -195,7 +181,12 @@ public class CrowdController : MonoBehaviour
         _rotatablePositionPoints.Add(rotatablePositionPoint);
     }
 
-    private void AddHuman(Human human)
+    public bool HasHuman(Human human)
+    {
+        return _humanInfos.Any(info => info.human == human);
+    }
+
+    public void AddHuman(Human human)
     {
         var humanInfo = new CrowdHumanInfo()
         {
@@ -203,6 +194,21 @@ public class CrowdController : MonoBehaviour
         };
 
         _humanInfos.Add(humanInfo);
+
+        human.transform.SetParent(humansContainer);
+
+        UpdateStaticPositionPointsCount();
+    }
+
+    public void RemoveHuman(Human human)
+    {
+        var humanInfo = _humanInfos.Where(info => info.human == human).FirstOrDefault();
+
+        if (humanInfo == null) return;
+
+        _humanInfos.Remove(humanInfo);
+
+        UpdateStaticPositionPointsCount();
     }
 }
 
