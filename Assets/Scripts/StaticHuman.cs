@@ -5,9 +5,13 @@ using UnityEngine;
 
 public class StaticHuman : Human
 {
+    [Header("Movement")]
+    [SerializeField] private float speed;
+    [SerializeField] protected float lerpSpeedChangeMultiplier = 1.0f;
     [SerializeField] private float repulsionCastRadius = 20.0f;
 
-    [SerializeField] protected float lerpSpeedChangeMultiplier = 1.0f;
+    private Vector3 _targetVelocity;
+    private Vector3 _currentVelocity;
 
     protected override void Move()
     {
@@ -34,5 +38,14 @@ public class StaticHuman : Human
         _humanRigidbody.velocity = _targetVelocity;// Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
 
         _currentVelocity = _targetVelocity;
+    }
+
+    protected override void Rotate() { }
+
+    protected override void ActionOnFixedUpdate() { }
+
+    protected override float GetSpeed()
+    {
+        return speed;
     }
 }

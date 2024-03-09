@@ -131,11 +131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 263c40779ff960f47aaecef7cdf95fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSpeed: 4
-  lerpSpeed: 15
-  lerpSpeedChangeMultiplier: 4
   _circleCollider: {fileID: 2102653949}
   _humanRigidbody: {fileID: 2102653948}
+  speed: 4
+  lerpSpeedChangeMultiplier: 4
   repulsionCastRadius: 1.25
 --- !u!50 &2102653948
 Rigidbody2D:

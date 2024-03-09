@@ -6,22 +6,45 @@ using UnityEngine;
 
 public class RotatableHuman : Human
 {
-    [SerializeField] private float speedOnRotate;
+    [Header("Movement")]
+    [SerializeField] private float walkSpeed;
+    [SerializeField] private float runSpeed;
+    [SerializeField] private float distantionToWalk = 0.5f;
+    [SerializeField] private float distantionToRun = 2.0f;
+    [SerializeField] private float dampMultiplier = 1.0f;
+
+    [Header("Bullets")]
     [SerializeField] private float rechargeTime;
     [SerializeField] private float bulletCastRadius = 0.5f;
     [SerializeField] private float bulletCastDistance = 2.0f;
 
+    [Space(10)]
     [SerializeField] private Transform bulletContainer;
     [SerializeField] private Bullet bulletPrefab;
-    
-    private InputManager _inputManager;
+
+    private Vector3 _targetVelocity;
+    private Vector3 _currentVelocity;
+    private Vector3 _velocityDamp;
+
     private float _lastShootTime;
-    private void Start()
+
+    protected override void Move()
     {
-        _inputManager = InputManager.Instance;
+        _targetVelocity = (_distinationPoint - transform.position).normalized * GetSpeed();
+
+        _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
+
+        _humanRigidbody.velocity = _currentVelocity;
     }
 
-    protected override void Update()
+    protected override void Rotate()
+    {
+        if (_inputManager.RotateDirection.magnitude <= 0) return;
+
+        transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection));
+    }
+
+    protected override void ActionOnFixedUpdate()
     {
         CheckShoot();
     }
@@ -30,28 +53,24 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, _distinationPoint) > 2.0f)
-                return speedOnRotate * _inputManager.RotateDirection.magnitude;
-            else if (Vector2.Distance(transform.position, _distinationPoint) > 0.5f)
-                return baseSpeed * _inputManager.RotateDirection.magnitude;
+            if (Vector2.Distance(transform.position, _distinationPoint) > distantionToRun)
+                return runSpeed * _inputManager.RotateDirection.magnitude;
+            else if (Vector2.Distance(transform.position, _distinationPoint) > distantionToWalk)
+                return walkSpeed * _inputManager.RotateDirection.magnitude;
             else
                 return 0;
         }
         else if (_inputManager.MoveDirection.magnitude > 0)
         {
-            return baseSpeed * _inputManager.MoveDirection.magnitude;
+            if (Vector2.Distance(transform.position, _distinationPoint) > distantionToWalk)
+                return walkSpeed * _inputManager.MoveDirection.magnitude;
+            else
+                return 0;
         }
         else
         {
             return 0;
         }
-    }
-
-    protected override void Rotate()
-    {
-        if (_inputManager.RotateDirection.magnitude <= 0) return;
-
-        transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection));
     }
 
     private void CheckShoot()
@@ -78,4 +97,6 @@ public class RotatableHuman : Human
 
         _lastShootTime = Time.time; 
     }
+
+
 }

@@ -116,7 +116,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5461741862288604021}
-  - {fileID: 2920968984112099957}
+  - {fileID: 2992064132154962670}
   - {fileID: 1235864947050133836}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -133,16 +133,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d6fcfb60008fb14bafff5fca3e7fd69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSpeed: 4
-  lerpSpeed: 100
-  dampMultiplier: 7
-  stoppingDistance: 0.5
   _circleCollider: {fileID: 987193250908754039}
   _humanRigidbody: {fileID: 2549399427659867087}
-  speedOnRotate: 7
+  walkSpeed: 4
+  runSpeed: 8
+  distantionToWalk: 0.5
+  distantionToRun: 2
+  dampMultiplier: 7
   rechargeTime: 0.75
   bulletCastRadius: 0.5
-  bulletCastDistance: 2
+  bulletCastDistance: 5
   bulletContainer: {fileID: 1235864947050133836}
   bulletPrefab: {fileID: 3029767028681060272, guid: 8617ba919b484f241b17517631dbdf64, type: 3}
 --- !u!58 &987193250908754039
@@ -206,7 +206,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7974558312856401870}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.8, y: 0, z: 0}
+  m_LocalPosition: {x: 0.98, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -237,13 +237,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8099598500760599976}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5461741862349187131}
-  m_RootOrder: 1
+  m_Father: {fileID: 2992064132154962670}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7326092470400651561
 SpriteRenderer:
@@ -297,3 +297,35 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &8306445981348189582
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2992064132154962670}
+  m_Layer: 0
+  m_Name: BulletIndicator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2992064132154962670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8306445981348189582}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 5, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2920968984112099957}
+  m_Father: {fileID: 5461741862349187131}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
