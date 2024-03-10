@@ -5,14 +5,18 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IBulletDamagable
 {
+    [Header("General")]
     [SerializeField] private float speed = 1.0f;
     [SerializeField] private float dampMultiplier = 1.0f;
-    [SerializeField] private float castRadius = 5.0f;
+    [SerializeField] private float moveRadius = 50.0f;
 
+    [Space(10)]
     [ReadOnly(true)]
     [SerializeField] private Rigidbody2D enemyRigidbody;
+
+    private CrowdController _crowdController;
 
     private Vector3 _currentVelocity;
     private Vector3 _targetVelocity;
@@ -25,14 +29,19 @@ public class Enemy : MonoBehaviour
     }
 #endif
 
+    private void Start()
+    {
+        _crowdController = CrowdController.Instance;
+    }
+
     private void FixedUpdate()
     {
-        var hits = Physics2D.CircleCastAll(transform.position, castRadius, Vector2.zero);
-        var humanhits = hits.Where(hit => hit.collider.TryGetComponent(out Human human)).ToArray();
+        var humans = _crowdController.GetHumanInfos().Select(info => info.human).ToArray();
+        var nearestHuman = GetNearestHuman(humans);
 
-        if (humanhits.Length > 0)
+        if (nearestHuman != null && Vector2.Distance(transform.position, nearestHuman.transform.position) < moveRadius)
         {
-            _targetVelocity = (humanhits[0].collider.transform.position - transform.position).normalized * speed * Time.fixedDeltaTime;
+            _targetVelocity = (nearestHuman.transform.position - transform.position).normalized * speed * Time.fixedDeltaTime;
         }
         else
         {
@@ -50,7 +59,17 @@ public class Enemy : MonoBehaviour
         human.Die();
     }
 
-    public void Die()
+    private Human GetNearestHuman(IEnumerable<Human> humans)
+    {
+        return humans.OrderBy(human => Vector2.Distance(transform.position, human.transform.position)).FirstOrDefault();
+    }
+
+    public virtual void Damage()
+    {
+        Die();
+    }
+
+    public virtual void Die()
     {
         Destroy(gameObject);
     }

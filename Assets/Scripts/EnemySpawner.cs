@@ -14,7 +14,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
-        _crowdTransform = DemoCrowdController.Instance.transform;
+        _crowdTransform = CrowdController.Instance.MoveContainer.transform;
 
         SpawnEnemy();
     }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CircleCollider2D))]
-public abstract class Human : MonoBehaviour
+public abstract class Human : MonoBehaviour, IDamagable
 {
     [ReadOnly(true)]
     [SerializeField] protected CircleCollider2D _circleCollider;
@@ -17,7 +17,9 @@ public abstract class Human : MonoBehaviour
     protected InputManager _inputManager;
     protected CrowdController _crowdController;
 
-    protected Vector3 _distinationPoint;
+    protected BasePositionPoint _destinationPoint;
+    protected Vector3 DestinationPosition => _destinationPoint == null ? Vector3.zero : _destinationPoint.transform.position;
+    protected float DestinationAngleOffset => _destinationPoint == null ? 0 : _destinationPoint.AngleOffset;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -55,12 +57,12 @@ public abstract class Human : MonoBehaviour
         return _crowdController.HasHuman(this);
     }
 
-    public void SetDestinationPosition(Vector3 destinationPoint)
+    public void SetDestinationPosition(BasePositionPoint destinationPoint)
     {
-        _distinationPoint = destinationPoint;
+        _destinationPoint = destinationPoint;
     }
 
-    public void Die()
+    public virtual void Die()
     {
         if (IsInCrowd())
         {
@@ -68,5 +70,10 @@ public abstract class Human : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    public virtual void Damage()
+    {
+        Die();
     }
 }

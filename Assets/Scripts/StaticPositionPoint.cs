@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class StaticPositionPoint : MonoBehaviour
+public class StaticPositionPoint : BasePositionPoint
 {
     [SerializeField] private TextMeshPro _textMeshPro;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class RotatableHuman : Human
 {
@@ -12,6 +13,9 @@ public class RotatableHuman : Human
     [SerializeField] private float distantionToWalk = 0.5f;
     [SerializeField] private float distantionToRun = 2.0f;
     [SerializeField] private float dampMultiplier = 1.0f;
+
+    [Header("Rotation")]
+    [SerializeField] private float rotationSpeed = 1.0f;
 
     [Header("Bullets")]
     [SerializeField] private float rechargeTime;
@@ -30,7 +34,7 @@ public class RotatableHuman : Human
 
     protected override void Move()
     {
-        _targetVelocity = (_distinationPoint - transform.position).normalized * GetSpeed();
+        _targetVelocity = (DestinationPosition - transform.position).normalized * GetSpeed();
 
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
 
@@ -41,7 +45,8 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude <= 0) return;
 
-        transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection));
+        var angle = Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection) + DestinationAngleOffset;
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, angle), rotationSpeed * Time.fixedDeltaTime);
     }
 
     protected override void ActionOnFixedUpdate()
@@ -53,16 +58,16 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, _distinationPoint) > distantionToRun)
+            if (Vector2.Distance(transform.position, DestinationPosition) > distantionToRun)
                 return runSpeed * _inputManager.RotateDirection.magnitude;
-            else if (Vector2.Distance(transform.position, _distinationPoint) > distantionToWalk)
+            else if (Vector2.Distance(transform.position, DestinationPosition) > distantionToWalk)
                 return walkSpeed * _inputManager.RotateDirection.magnitude;
             else
                 return 0;
         }
         else if (_inputManager.MoveDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, _distinationPoint) > distantionToWalk)
+            if (Vector2.Distance(transform.position, DestinationPosition) > distantionToWalk)
                 return walkSpeed * _inputManager.MoveDirection.magnitude;
             else
                 return 0;

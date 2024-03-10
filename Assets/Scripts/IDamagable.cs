@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RotatablePositionPoint : BasePositionPoint
+public interface IDamagable
 {
-    
+    public void Damage();
+    public void Die();
 }

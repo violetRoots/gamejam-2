@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class UIManager : SingletonMonoBehaviourBase<UIManager>
 {
-    public FixedJoystick MoveJoystick => moveJoystick;
-    public FixedJoystick RotateJoystick => rotateJoystick;
+    public Joystick MoveJoystick => moveJoystick;
+    public Joystick RotateJoystick => rotateJoystick;
 
-    [SerializeField] private FixedJoystick moveJoystick;
-    [SerializeField] private FixedJoystick rotateJoystick;
+    [SerializeField] private Joystick moveJoystick;
+    [SerializeField] private Joystick rotateJoystick;
 }

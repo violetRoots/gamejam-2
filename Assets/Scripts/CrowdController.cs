@@ -4,20 +4,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 {
+    public Transform MoveContainer => moveContainer;
+
     [Header("General")]
     [SerializeField] private float crowdMoveSpeed = 1.0f;
     [SerializeField] private float lerprCrowdMoveSpeed = 1.0f;
 
     [Space(10)]
     [SerializeField] private Transform moveContainer;
-    [SerializeField] private Transform humansContainer;
+    [SerializeField] private Transform staticHumansContainer;
+    [SerializeField] private Transform rotatableHumansContainer;
 
     [Header("Position Points")]
     [SerializeField] private float distanceBetweenCircles = 0.1f;
     [SerializeField] private float colliderRadius = 1.0f;
+    [SerializeField] private float circlePartsCount = 2.0f;
 
     [Space(10)]
     [SerializeField] private RotatablePositionPoint rotatablePositionPointPrefab;
@@ -70,18 +75,23 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         var staticHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is StaticHuman).ToArray();
         for (var i = 0; i < staticHumanInfos.Length; i++)
         {
-            var destinationPos = _staticPositionPoints[i].transform.position;
-            staticHumanInfos[i].human.SetDestinationPosition(destinationPos);
+            var destinationPoint = _staticPositionPoints[i];
+            staticHumanInfos[i].human.SetDestinationPosition(destinationPoint);
         }
     }
 
     private void MoveRotatableHumans()
     {
         var rotatableHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is RotatableHuman).ToArray();
-        for (var i = 0; i < rotatableHumanInfos.Length; i++)
+        var usedHumanInfos = new List<CrowdHumanInfo>();
+        for (var i  = 0; i < _rotatablePositionPoints.Count && i < rotatableHumanInfos.Length; i++)
         {
-            var destinationPos = _rotatablePositionPoints[i].transform.position;
-            rotatableHumanInfos[i].human.SetDestinationPosition(destinationPos);
+            var destinationPoint = _rotatablePositionPoints[i];
+            var info = rotatableHumanInfos.Where(info => !usedHumanInfos.Contains(info))
+                .OrderBy(info => Vector2.Distance(destinationPoint.transform.position, info.human.transform.position))
+                .FirstOrDefault();
+            usedHumanInfos.Add(info);
+            info.human.SetDestinationPosition(destinationPoint);
         }
     }
 
@@ -101,10 +111,12 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         }
         _rotatablePositionPoints.Clear();
 
+
+
         while (_rotatablePositionPoints.Count < _rotatableHumanInofos.Count)
         {
-            SpawnRotatableCircle(_circlesCount);
             _circlesCount++;
+            SpawnRotatableCircle(_circlesCount);
         }
     }
 
@@ -134,6 +146,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
             var localPosition = Quaternion.Euler(0, 0, angle * j) * Vector2.right * radius;
             var staticPositionPoint = Instantiate(staticPositionPointPrefab, staticPositionPointsContainer);
             staticPositionPoint.transform.localPosition = localPosition;
+            staticPositionPoint.SetAngleOffset(angle);
             _staticPositionPoints.Add(staticPositionPoint);
             staticPositionPoint.SetText(_staticPositionPoints.FindIndex(point => point == staticPositionPoint).ToString());
         }
@@ -145,9 +158,11 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         var length = 2.0f * Mathf.PI * radius;
         var markersCount = (int)(length / colliderRadius);
         var angle = Mathf.Rad2Deg * 2.0f * Mathf.PI / markersCount;
-        for (var j = 0; j < markersCount * 2; j += 1 )
+        var half = (int)(markersCount / circlePartsCount);
+        for (var j = 0; j < half; j += 1 )
         {
-            var index = j % 2 == 0 ? markersCount * 2 - 1 - j : j;
+            int center = (int)(markersCount * 0.5f);
+            int index = j % 2 == 0 ? - 1 - j : j;
             SpawnRotatablePositionPoint(angle * index * 0.5f, radius);
         }
     }
@@ -157,6 +172,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         var localPosition = Quaternion.Euler(0, 0, angle) * Vector2.right * radius;
         var rotatablePositionPoint = Instantiate(rotatablePositionPointPrefab, rotatablePositionPointsContainer);
         rotatablePositionPoint.transform.localPosition = localPosition;
+        rotatablePositionPoint.SetAngleOffset(angle);
         _rotatablePositionPoints.Add(rotatablePositionPoint);
     }
 
@@ -174,7 +190,12 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
         _humanInfos.Add(humanInfo);
 
-        human.transform.SetParent(humansContainer);
+        var container = staticHumansContainer;
+        if (human is StaticHuman)
+            container = staticHumansContainer;
+        else if(human is RotatableHuman)
+            container = rotatableHumansContainer;
+        human.transform.SetParent(container);
 
         UpdatePositionPoints();
     }
@@ -188,6 +209,14 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         _humanInfos.Remove(humanInfo);
 
         UpdatePositionPoints();
+
+        if(_humanInfos.Count <= 0)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public IEnumerable<CrowdHumanInfo> GetHumanInfos()
+    {
+        return _humanInfos;
     }
 }
 

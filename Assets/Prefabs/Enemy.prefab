@@ -133,7 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 100
   dampMultiplier: 1
-  castRadius: 5
+  castRadius: 100
   enemyRigidbody: {fileID: 4623109054373496346}
 --- !u!61 &4623109054373496345
 BoxCollider2D:
