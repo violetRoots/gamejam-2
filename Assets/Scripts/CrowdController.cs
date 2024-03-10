@@ -8,14 +8,14 @@ using UnityEngine.SceneManagement;
 
 public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 {
-    public Transform MoveContainer => moveContainer;
+    public Transform MoveContainer => moveRigidbody.transform;
 
     [Header("General")]
     [SerializeField] private float crowdMoveSpeed = 1.0f;
-    [SerializeField] private float lerprCrowdMoveSpeed = 1.0f;
+    [SerializeField] private float dampMoveMultiplier = 1.0f;
 
     [Space(10)]
-    [SerializeField] private Transform moveContainer;
+    [SerializeField] private Rigidbody2D moveRigidbody;
     [SerializeField] private Transform staticHumansContainer;
     [SerializeField] private Transform rotatableHumansContainer;
 
@@ -42,6 +42,10 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private int _circlesCount;
 
+    private Vector3 _currentVelocity;
+    private Vector3 _targetVelocity;
+    private Vector3 _dampVelocity;
+
     private void Start()
     {
         _inputManager = InputManager.Instance;
@@ -58,8 +62,9 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void MoveCrowd()
     {
-        var translation = moveContainer.position + (Vector3) _inputManager.MoveDirection * crowdMoveSpeed;
-        moveContainer.position = Vector3.Lerp(moveContainer.position, translation, lerprCrowdMoveSpeed * Time.fixedDeltaTime);
+        _targetVelocity = _inputManager.MoveDirection * crowdMoveSpeed;
+        _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, dampMoveMultiplier * Time.fixedDeltaTime);
+        moveRigidbody.velocity = _currentVelocity;
     }
 
     private void RotateCrowd()

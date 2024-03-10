@@ -9,9 +9,7 @@ public class RotatableHuman : Human
 {
     [Header("Movement")]
     [SerializeField] private float walkSpeed;
-    [SerializeField] private float runSpeed;
     [SerializeField] private float distantionToWalk = 0.5f;
-    [SerializeField] private float distantionToRun = 2.0f;
     [SerializeField] private float dampMultiplier = 1.0f;
 
     [Header("Rotation")]
@@ -35,9 +33,7 @@ public class RotatableHuman : Human
     protected override void Move()
     {
         _targetVelocity = (DestinationPosition - transform.position).normalized * GetSpeed();
-
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
-
         _humanRigidbody.velocity = _currentVelocity;
     }
 
@@ -58,9 +54,7 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, DestinationPosition) > distantionToRun)
-                return runSpeed * _inputManager.RotateDirection.magnitude;
-            else if (Vector2.Distance(transform.position, DestinationPosition) > distantionToWalk)
+            if (Vector2.Distance(transform.position, DestinationPosition) > distantionToWalk)
                 return walkSpeed * _inputManager.RotateDirection.magnitude;
             else
                 return 0;

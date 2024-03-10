@@ -7,12 +7,14 @@ public class StaticHuman : Human, IBulletDamagable
 {
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4.0f;
+    [SerializeField] private float repulsionSpeed = 8.0f;
     [SerializeField] private float walkDistantion = 0.1f;
-    [SerializeField] protected float lerpSpeedChangeMultiplier = 1.0f;
+    [SerializeField] protected float moveDampMultiplier = 1.0f;
     [SerializeField] private float repulsionCastRadius = 20.0f;
 
     private Vector3 _targetVelocity;
     private Vector3 _currentVelocity;
+    private Vector3 _dampVelocity;
 
     protected override void Move()
     {
@@ -21,24 +23,28 @@ public class StaticHuman : Human, IBulletDamagable
 
         if (rotatableHits.Length > 0)
         {
-            _targetVelocity = (rotatableHits[0].normal + new Vector2(-rotatableHits[0].normal.y, rotatableHits[0].normal.x)).normalized * GetSpeed();
+            var destinationDir = (DestinationPosition - transform.position).normalized;
+            var newDir = (rotatableHits[0].normal * 0.5f + new Vector2(-rotatableHits[0].normal.y, rotatableHits[0].normal.x)).normalized;
+            var dir = Vector2.Dot(destinationDir, newDir) > 0 ? newDir : -newDir;
+            _targetVelocity = dir * repulsionSpeed;
         }
         else
         {
-            if (Vector2.Distance(transform.position, DestinationPosition) < walkDistantion)
+            if (Vector2.Distance(transform.position, DestinationPosition) >= walkDistantion)
             {
-                _humanRigidbody.velocity = Vector3.zero;
-                return;
+                _targetVelocity = (DestinationPosition - transform.position).normalized * GetSpeed();
             }
-
-            _targetVelocity = (DestinationPosition - transform.position).normalized * GetSpeed();
+            else
+            {
+                _targetVelocity = Vector3.zero;
+            }
         }
 
-        _targetVelocity = Vector3.Lerp(_currentVelocity, _targetVelocity, Time.fixedDeltaTime * lerpSpeedChangeMultiplier);
+        _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, moveDampMultiplier * Time.fixedDeltaTime);
 
-        _humanRigidbody.velocity = _targetVelocity;// Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
+        //_targetVelocity = Vector3.Lerp(_currentVelocity, _targetVelocity, Time.fixedDeltaTime * lerpSpeedChangeMultiplier);
 
-        _currentVelocity = _targetVelocity;
+        _humanRigidbody.velocity = _currentVelocity;// Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
     }
 
     protected override void Rotate() { }
