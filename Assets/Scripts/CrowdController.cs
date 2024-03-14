@@ -188,6 +188,10 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     public void AddHuman(Human human)
     {
+        if(human == null) return;
+
+        if (_humanInfos.Where(info => info.human == human).ToArray().Length >= 1) return;
+
         var humanInfo = new CrowdHumanInfo()
         {
             human = human

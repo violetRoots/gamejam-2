@@ -61,7 +61,7 @@ public class Enemy : MonoBehaviour, IBulletDamagable
 
     private Human GetNearestHuman(IEnumerable<Human> humans)
     {
-        return humans.OrderBy(human => Vector2.Distance(transform.position, human.transform.position)).FirstOrDefault();
+        return humans.Where(human => human != null).OrderBy(human =>  Vector2.Distance(transform.position, human.transform.position)).FirstOrDefault();
     }
 
     public virtual void Damage()
