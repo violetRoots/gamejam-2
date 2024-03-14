@@ -21,7 +21,8 @@ public class SplashEnemy : Enemy
         {
             if (!hit.collider.TryGetComponent(out IDamagable damagable)) continue;
 
-            damagable.Die();
+            if(damagable.CanDamage())
+                damagable.Damage();
         }
     }
 }

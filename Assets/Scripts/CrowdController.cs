@@ -81,7 +81,11 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         for (var i = 0; i < staticHumanInfos.Length; i++)
         {
             var destinationPoint = _staticPositionPoints[i];
-            staticHumanInfos[i].human.SetDestinationPosition(destinationPoint);
+
+            if (staticHumanInfos[i].human == null) continue;
+
+            staticHumanInfos[i].human.SetDestinationPosition(destinationPoint.transform.position);
+            staticHumanInfos[i].human.SetAngleOffset(destinationPoint.AngleOffset);
         }
     }
 
@@ -96,7 +100,11 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
                 .OrderBy(info => Vector2.Distance(destinationPoint.transform.position, info.human.transform.position))
                 .FirstOrDefault();
             usedHumanInfos.Add(info);
-            info.human.SetDestinationPosition(destinationPoint);
+
+            if (info.human == null) continue;
+
+            info.human.SetDestinationPosition(destinationPoint.transform.position);
+            info.human.SetAngleOffset(destinationPoint.AngleOffset);
         }
     }
 
@@ -188,7 +196,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     public void AddHuman(Human human)
     {
-        if(human == null) return;
+        if(human == null || !human.CanCollect()) return;
 
         if (_humanInfos.Where(info => info.human == human).ToArray().Length >= 1) return;
 

@@ -39,7 +39,9 @@ public class Bullet : MonoBehaviour
     {
         if(collision.TryGetComponent(out IBulletDamagable damagable))
         {
-            damagable.Damage();
+            if(damagable.CanDamage())
+                damagable.Die();
+
             Destroy(gameObject);
         }
     }

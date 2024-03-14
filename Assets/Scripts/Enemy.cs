@@ -56,7 +56,8 @@ public class Enemy : MonoBehaviour, IBulletDamagable
     {
         if (!collision.collider.TryGetComponent(out Human human)) return;
 
-        human.Die();
+        if(human.CanDamage())
+            human.Damage();
     }
 
     private Human GetNearestHuman(IEnumerable<Human> humans)
@@ -72,5 +73,10 @@ public class Enemy : MonoBehaviour, IBulletDamagable
     public virtual void Die()
     {
         Destroy(gameObject);
+    }
+
+    public bool CanDamage()
+    {
+        return true;
     }
 }

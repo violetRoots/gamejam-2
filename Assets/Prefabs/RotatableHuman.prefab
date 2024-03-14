@@ -139,7 +139,7 @@ MonoBehaviour:
   distantionToWalk: 0.7
   dampMultiplier: 7
   rotationSpeed: 5
-  rechargeTime: 0.2
+  rechargeTime: 0.5
   bulletCastRadius: 0.5
   bulletCastDistance: 7
   bulletContainer: {fileID: 1235864947050133836}

@@ -32,7 +32,7 @@ public class RotatableHuman : Human
 
     protected override void Move()
     {
-        _targetVelocity = (DestinationPosition - transform.position).normalized * GetSpeed();
+        _targetVelocity = (_destinationPosition - transform.position).normalized * GetSpeed();
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
         _humanRigidbody.velocity = _currentVelocity;
     }
@@ -41,11 +41,11 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude <= 0) return;
 
-        var angle = Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection) + DestinationAngleOffset;
+        var angle = Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection) + _destinationAngleOffset;
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, angle), rotationSpeed * Time.fixedDeltaTime);
     }
 
-    protected override void ActionOnFixedUpdate()
+    protected override void SkillAction()
     {
         CheckShoot();
     }
@@ -54,14 +54,14 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, DestinationPosition) > distantionToWalk)
+            if (Vector2.Distance(transform.position, _destinationPosition) > distantionToWalk)
                 return walkSpeed * _inputManager.RotateDirection.magnitude;
             else
                 return 0;
         }
         else if (_inputManager.MoveDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, DestinationPosition) > distantionToWalk)
+            if (Vector2.Distance(transform.position, _destinationPosition) > distantionToWalk)
                 return walkSpeed * _inputManager.MoveDirection.magnitude;
             else
                 return 0;

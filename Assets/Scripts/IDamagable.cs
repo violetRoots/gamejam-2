@@ -6,4 +6,5 @@ public interface IDamagable
 {
     public void Damage();
     public void Die();
+    public bool CanDamage();
 }

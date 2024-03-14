@@ -17,9 +17,8 @@ public abstract class Human : MonoBehaviour, IDamagable
     protected InputManager _inputManager;
     protected CrowdController _crowdController;
 
-    protected BasePositionPoint _destinationPoint;
-    protected Vector3 DestinationPosition => _destinationPoint == null ? Vector3.zero : _destinationPoint.transform.position;
-    protected float DestinationAngleOffset => _destinationPoint == null ? 0 : _destinationPoint.AngleOffset;
+    protected Vector3 _destinationPosition;
+    protected float _destinationAngleOffset;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -33,33 +32,63 @@ public abstract class Human : MonoBehaviour, IDamagable
 
     protected abstract void Rotate();
 
-    protected abstract void ActionOnFixedUpdate();
+    protected abstract void SkillAction();
 
     protected abstract float GetSpeed();
+
+    protected virtual bool CanMove()
+    {
+        return IsInCrowd();
+    }
+
+    protected virtual bool CanRotate()
+    {
+        return IsInCrowd();
+    }
+
+    protected virtual bool CanUseSkill()
+    {
+        return IsInCrowd();
+    }
 
     protected virtual void Awake()
     {
         _inputManager = InputManager.Instance;
         _crowdController = CrowdController.Instance;
+
+        _destinationPosition = transform.position;
     }
 
     private void FixedUpdate()
     {
-        if (!IsInCrowd()) return;
+        if(CanMove()) 
+            Move();
 
-        Move();
-        Rotate();
-        ActionOnFixedUpdate();
+        if(CanRotate()) 
+            Rotate();
+
+        if(CanUseSkill())
+            SkillAction();
     }
 
-    private bool IsInCrowd()
+    protected bool IsInCrowd()
     {
         return _crowdController.HasHuman(this);
     }
 
-    public void SetDestinationPosition(BasePositionPoint destinationPoint)
+    public virtual bool CanCollect()
     {
-        _destinationPoint = destinationPoint;
+        return true;
+    }
+
+    public void SetDestinationPosition(Vector3 destinationPosition)
+    {
+        _destinationPosition = destinationPosition;
+    }
+
+    public void SetAngleOffset(float angleOffset)
+    {
+        _destinationAngleOffset = angleOffset;
     }
 
     public virtual void Die()
@@ -75,5 +104,10 @@ public abstract class Human : MonoBehaviour, IDamagable
     public virtual void Damage()
     {
         Die();
+    }
+
+    public virtual bool CanDamage()
+    {
+        return true;
     }
 }
