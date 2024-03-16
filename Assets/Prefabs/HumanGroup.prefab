@@ -206,7 +206,7 @@ MonoBehaviour:
   - {fileID: 7218647175679747900, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
   - {fileID: 7218647175679747900, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
   - {fileID: 7218647175679747900, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
-  - {fileID: 5461741862349187132, guid: 6c6956498886d6b438f7c4474cef0494, type: 3}
+  - {fileID: 7218647175679747900, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
 --- !u!58 &4442569153525228507
 CircleCollider2D:
   m_ObjectHideFlags: 0

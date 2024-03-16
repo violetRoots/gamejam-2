@@ -52,19 +52,14 @@ public class RotatableHuman : Human
 
     protected override float GetSpeed()
     {
-        if (_inputManager.RotateDirection.magnitude > 0)
+        var distance = Vector2.Distance(transform.position, _destinationPosition);
+        if (_inputManager.RotateDirection.magnitude > 0) 
         {
-            if (Vector2.Distance(transform.position, _destinationPosition) > distantionToWalk)
-                return walkSpeed * _inputManager.RotateDirection.magnitude;
-            else
-                return 0;
+            return walkSpeed * _inputManager.RotateDirection.magnitude * Mathf.Clamp01(distance / distantionToWalk);
         }
         else if (_inputManager.MoveDirection.magnitude > 0)
         {
-            if (Vector2.Distance(transform.position, _destinationPosition) > distantionToWalk)
-                return walkSpeed * _inputManager.MoveDirection.magnitude;
-            else
-                return 0;
+            return walkSpeed * _inputManager.MoveDirection.magnitude * Mathf.Clamp01(distance / distantionToWalk);
         }
         else
         {
@@ -92,10 +87,13 @@ public class RotatableHuman : Human
     private void Shoot()
     {
         var bullet = Instantiate(bulletPrefab, bulletContainer.position, Quaternion.identity);
-        bullet.Init(transform.rotation);
+        bullet.Init(transform.right);
 
         _lastShootTime = Time.time; 
     }
 
-
+    //protected override bool CanMove()
+    //{
+    //    return _inputManager.RotateDirection.magnitude > 0;
+    //}
 }

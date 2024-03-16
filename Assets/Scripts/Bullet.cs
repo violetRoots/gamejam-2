@@ -9,7 +9,7 @@ public class Bullet : MonoBehaviour
 
     [SerializeField] private Rigidbody2D bulletRigidbody;
 
-    private Quaternion _direction;
+    private Vector2 _direction;
     private float _initTime;
 
 #if UNITY_EDITOR
@@ -19,7 +19,7 @@ public class Bullet : MonoBehaviour
     }
 #endif
 
-    public void Init(Quaternion direction)
+    public void Init(Vector2 direction)
     {
         _initTime = Time.time;
         _direction = direction;
@@ -48,7 +48,7 @@ public class Bullet : MonoBehaviour
 
     private void Move()
     {
-        bulletRigidbody.velocity = _direction * Vector3.right * speed * Time.fixedDeltaTime;
+        bulletRigidbody.velocity = _direction * speed * Time.fixedDeltaTime;
     }
 
     private void CheckDestroy()

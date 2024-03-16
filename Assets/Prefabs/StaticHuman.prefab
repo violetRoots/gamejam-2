@@ -133,10 +133,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _circleCollider: {fileID: 2102653949}
   _humanRigidbody: {fileID: 2102653948}
-  walkSpeed: 4
+  walkSpeed: 8
   walkDistantion: 0.6
-  moveDampMultiplier: 7
-  repulsionCastRadius: 2
+  moveDampMultiplier: 2
+  repulsionCastRadius: 1.5
+  repulsionSpeedMulyiplier: 4
 --- !u!50 &2102653948
 Rigidbody2D:
   serializedVersion: 4

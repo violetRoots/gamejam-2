@@ -7,10 +7,10 @@ public class StaticHuman : Human, IBulletDamagable
 {
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4.0f;
-    [SerializeField] private float repulsionSpeed = 8.0f;
     [SerializeField] private float walkDistantion = 0.1f;
     [SerializeField] protected float moveDampMultiplier = 1.0f;
     [SerializeField] private float repulsionCastRadius = 20.0f;
+    [SerializeField] private float repulsionSpeedMultiplier = 2.0f;
 
     private bool _isSaved;
 
@@ -23,30 +23,24 @@ public class StaticHuman : Human, IBulletDamagable
         var hits = Physics2D.CircleCastAll(transform.position, repulsionCastRadius, Vector2.zero);
         var rotatableHits = hits.Where(hit => hit.collider.TryGetComponent(out RotatableHuman rotatableHuman)).ToArray();
 
+        var repulsionVelocity = Vector3.zero;
+        var normal = Vector3.zero;
+        var destinationDir = (_destinationPosition - transform.position).normalized;
+        var hitDistance = 0.0f;
         if (rotatableHits.Length > 0)
         {
-            var destinationDir = (_destinationPosition - transform.position).normalized;
-            var newDir = (rotatableHits[0].normal * 0.5f + new Vector2(-rotatableHits[0].normal.y, rotatableHits[0].normal.x)).normalized;
+            var distance = Vector2.Distance(rotatableHits[0].transform.position, transform.position);
+            hitDistance = rotatableHits[0].distance;
+            normal = rotatableHits[0].normal;
+            var newDir = ((Vector2) normal * 0.5f + new Vector2(-rotatableHits[0].normal.y, rotatableHits[0].normal.x)).normalized;
             var dir = Vector2.Dot(destinationDir, newDir) > 0 ? newDir : -newDir;
-            _targetVelocity = dir * repulsionSpeed;
+            repulsionVelocity = dir * repulsionSpeedMultiplier;
         }
-        else
-        {
-            if (Vector2.Distance(transform.position, _destinationPosition) >= walkDistantion)
-            {
-                _targetVelocity = (_destinationPosition - transform.position).normalized * GetSpeed();
-            }
-            else
-            {
-                _targetVelocity = Vector3.zero;
-            }
-        }
+
+        _targetVelocity = (destinationDir + repulsionVelocity + normal).normalized * GetSpeed();
 
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, moveDampMultiplier * Time.fixedDeltaTime);
-
-        //_targetVelocity = Vector3.Lerp(_currentVelocity, _targetVelocity, Time.fixedDeltaTime * lerpSpeedChangeMultiplier);
-
-        _humanRigidbody.velocity = _currentVelocity;// Vector2.Lerp(_humanRigidbody.velocity, _velocity, lerpSpeed * Time.fixedDeltaTime);
+        _humanRigidbody.velocity = _currentVelocity;
     }
 
     protected override void Rotate() { }
@@ -55,7 +49,8 @@ public class StaticHuman : Human, IBulletDamagable
 
     protected override float GetSpeed()
     {
-        return walkSpeed;
+        var distance = Vector2.Distance(transform.position, _destinationPosition);
+        return walkSpeed * Mathf.Clamp01(distance / walkDistantion);
     }
     public override bool CanCollect()
     {
