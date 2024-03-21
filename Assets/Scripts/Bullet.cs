@@ -11,6 +11,7 @@ public class Bullet : MonoBehaviour
 
     private Vector2 _direction;
     private float _initTime;
+    private int _damage;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -19,10 +20,11 @@ public class Bullet : MonoBehaviour
     }
 #endif
 
-    public void Init(Vector2 direction)
+    public void Init(Vector2 direction, int damage)
     {
         _initTime = Time.time;
         _direction = direction;
+        _damage = damage;
     }
 
     private void Update()
@@ -39,8 +41,8 @@ public class Bullet : MonoBehaviour
     {
         if(collision.TryGetComponent(out IBulletDamagable damagable))
         {
-            if(damagable.CanDamage())
-                damagable.Die();
+            if (damagable.CanDamage())
+                damagable.Damage(_damage);
 
             Destroy(gameObject);
         }

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    public void Damage();
+    public int Health { get; set; }
+
+    public void Damage(int damagePoints);
     public void Die();
     public bool CanDamage();
 }

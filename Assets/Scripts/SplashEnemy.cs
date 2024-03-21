@@ -5,13 +5,20 @@ using UnityEngine;
 public class SplashEnemy : Enemy
 {
     [Header("Splash")]
+    [SerializeField] private int splashDamage = 500;
     [SerializeField] private float splashRadius = 10.0f;
 
-    public override void Damage()
-    {
-        Splash();
+    private bool _canSplash = true;
 
-        base.Die();
+    public override void Damage(int damagePoints)
+    {
+        if (_canSplash)
+        {
+            _canSplash = false;
+            Splash();
+        }
+
+        base.Damage(damagePoints);
     }
 
     private void Splash()
@@ -19,10 +26,10 @@ public class SplashEnemy : Enemy
         var hits = Physics2D.CircleCastAll(transform.position, splashRadius, Vector2.zero);
         foreach (var hit in hits)
         {
-            if (!hit.collider.TryGetComponent(out IDamagable damagable)) continue;
+            if (!hit.collider.TryGetComponent(out IDamagable damagable) || damagable == (IDamagable) this) continue;
 
             if(damagable.CanDamage())
-                damagable.Damage();
+                damagable.Damage(splashDamage);
         }
     }
 }

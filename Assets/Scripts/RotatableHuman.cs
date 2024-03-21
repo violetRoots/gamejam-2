@@ -16,6 +16,7 @@ public class RotatableHuman : Human
     [SerializeField] private float rotationSpeed = 1.0f;
 
     [Header("Bullets")]
+    [SerializeField] private int damage = 100;
     [SerializeField] private float rechargeTime;
     [SerializeField] private float bulletCastRadius = 0.5f;
     [SerializeField] private float bulletCastDistance = 2.0f;
@@ -87,7 +88,7 @@ public class RotatableHuman : Human
     private void Shoot()
     {
         var bullet = Instantiate(bulletPrefab, bulletContainer.position, Quaternion.identity);
-        bullet.Init(transform.right);
+        bullet.Init(transform.right, damage);
 
         _lastShootTime = Time.time; 
     }

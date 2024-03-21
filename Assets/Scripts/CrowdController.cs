@@ -30,6 +30,14 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     [SerializeField] private Transform rotatablePositionPointsContainer;
     [SerializeField] private Transform staticPositionPointsContainer;
 
+    [Header("Collect Area")]
+    [MinMaxSlider(0, 20)]
+    [SerializeField] private Vector2Int collectAreaCircleBounds = Vector2Int.up;
+    [MinMaxSlider(0.0f, 50.0f)]
+    [SerializeField] private Vector2 collectAreaScaleBounds = Vector2.up;
+
+    [SerializeField] private Transform collectAreaTransform;
+
     private InputManager _inputManager;
 
     private List<CrowdHumanInfo> _rotatableHumanInofos => _humanInfos.Where(info => info.human is RotatableHuman).ToList();
@@ -215,6 +223,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         human.transform.SetParent(container);
 
         UpdatePositionPoints();
+        UpdateCollectAreaScale();
     }
 
     public void RemoveHuman(Human human)
@@ -226,6 +235,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
         _humanInfos.Remove(humanInfo);
 
         UpdatePositionPoints();
+        UpdateCollectAreaScale();
 
         if(_humanInfos.Count <= 0)
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -234,6 +244,13 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     public IEnumerable<CrowdHumanInfo> GetHumanInfos()
     {
         return _humanInfos;
+    }
+
+    private void UpdateCollectAreaScale()
+    {
+        var circleValue = Mathf.Lerp(collectAreaCircleBounds.x, collectAreaCircleBounds.y, (float)(_circlesCount) / collectAreaCircleBounds.y);
+        var scaleValue = Mathf.Lerp(collectAreaScaleBounds.x, collectAreaScaleBounds.y, circleValue / collectAreaScaleBounds.y);
+        collectAreaTransform.localScale = new Vector3(scaleValue, scaleValue, 1.0f);
     }
 }
 

@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 8445539953382475800}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8701143367947935128}
@@ -89,6 +89,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4623109053166193591, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
@@ -149,7 +150,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4623109054373496344, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4623109054373496327, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6282287300017511718}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4623109054373496347, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3871279462703497662}
   m_SourcePrefab: {fileID: 100100000, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+--- !u!212 &8701143367008276520 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4623109053166193591, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+  m_PrefabInstance: {fileID: 4100596704948738975}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8701143367947935108 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4623109054373496347, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
@@ -167,11 +182,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0b50ee356544d4b9915464d75edea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startHealth: 1
+  damage: 100
   speed: 100
   dampMultiplier: 1
-  castRadius: 100
+  moveRadius: 50
   enemyRigidbody: {fileID: 8701143367947935109}
-  splashRadius: 3
+  damageEffectDuration: 0.2
+  spriteRenderer: {fileID: 8701143367008276520}
+  splashDamage: 500
+  splashRadius: 2.5
 --- !u!50 &8701143367947935109 stripped
 Rigidbody2D:
   m_CorrespondingSourceObject: {fileID: 4623109054373496346, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}

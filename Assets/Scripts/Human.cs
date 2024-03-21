@@ -8,17 +8,29 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public abstract class Human : MonoBehaviour, IDamagable
 {
+    [Header("General")]
+    [SerializeField] private int startHealth = 100;
+
+    [Space(10)]
     [ReadOnly(true)]
     [SerializeField] protected CircleCollider2D _circleCollider;
 
     [ReadOnly(true)]
     [SerializeField] protected Rigidbody2D _humanRigidbody;
 
+    public int Health
+    {
+        get => _currentHealth;
+        set => _currentHealth = value;
+    }
+
     protected InputManager _inputManager;
     protected CrowdController _crowdController;
 
     protected Vector3 _destinationPosition;
     protected float _destinationAngleOffset;
+
+    private int _currentHealth;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -57,6 +69,8 @@ public abstract class Human : MonoBehaviour, IDamagable
         _crowdController = CrowdController.Instance;
 
         _destinationPosition = transform.position;
+
+        Health = startHealth;
     }
 
     private void FixedUpdate()
@@ -101,9 +115,12 @@ public abstract class Human : MonoBehaviour, IDamagable
         Destroy(gameObject);
     }
 
-    public virtual void Damage()
+    public virtual void Damage(int damagePoints)
     {
-        Die();
+        Health -= damagePoints;
+
+        if (Health <= 0)
+            Die();
     }
 
     public virtual bool CanDamage()
