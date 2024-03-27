@@ -61,6 +61,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4623109054373496344, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+      propertyPath: diedMarker
+      value: 
+      objectReference: {fileID: 416173528166915372, guid: 1a233ec50efcc824aaa3596f523b3037, type: 3}
+    - target: {fileID: 4623109054373496344, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
       propertyPath: startHealth
       value: 500
       objectReference: {fileID: 0}

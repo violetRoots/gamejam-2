@@ -41,8 +41,8 @@ public class Bullet : MonoBehaviour
     {
         if(collision.TryGetComponent(out IBulletDamagable damagable))
         {
-            if (damagable.CanDamage())
-                damagable.Damage(_damage);
+            if (damagable.CanGetDamage())
+                damagable.GetDamage(_damage);
 
             Destroy(gameObject);
         }

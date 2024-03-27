@@ -6,7 +6,6 @@ public interface IDamagable
 {
     public int Health { get; set; }
 
-    public void Damage(int damagePoints);
-    public void Die();
-    public bool CanDamage();
+    public void GetDamage(int damagePoints);
+    public bool CanGetDamage();
 }

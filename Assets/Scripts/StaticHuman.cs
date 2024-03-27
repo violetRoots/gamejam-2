@@ -62,7 +62,7 @@ public class StaticHuman : Human, IBulletDamagable
         return IsInCrowd() || _isSaved;
     }
 
-    public override bool CanDamage()
+    public override bool CanGetDamage()
     {
         return !_isSaved;
     }

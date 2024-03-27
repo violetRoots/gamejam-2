@@ -6,11 +6,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CircleCollider2D))]
-public abstract class Human : MonoBehaviour, IDamagable
+public abstract class Human : Creature
 {
-    [Header("General")]
-    [SerializeField] private int startHealth = 100;
-
     [Space(10)]
     [ReadOnly(true)]
     [SerializeField] protected CircleCollider2D _circleCollider;
@@ -18,19 +15,11 @@ public abstract class Human : MonoBehaviour, IDamagable
     [ReadOnly(true)]
     [SerializeField] protected Rigidbody2D _humanRigidbody;
 
-    public int Health
-    {
-        get => _currentHealth;
-        set => _currentHealth = value;
-    }
-
     protected InputManager _inputManager;
     protected CrowdController _crowdController;
 
     protected Vector3 _destinationPosition;
     protected float _destinationAngleOffset;
-
-    private int _currentHealth;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -63,14 +52,14 @@ public abstract class Human : MonoBehaviour, IDamagable
         return IsInCrowd();
     }
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         _inputManager = InputManager.Instance;
         _crowdController = CrowdController.Instance;
 
         _destinationPosition = transform.position;
-
-        Health = startHealth;
     }
 
     private void FixedUpdate()
@@ -105,17 +94,17 @@ public abstract class Human : MonoBehaviour, IDamagable
         _destinationAngleOffset = angleOffset;
     }
 
-    public virtual void Die()
+    public override void Die()
     {
         if (IsInCrowd())
         {
             _crowdController.RemoveHuman(this);
         }
 
-        Destroy(gameObject);
+        base.Die();
     }
 
-    public virtual void Damage(int damagePoints)
+    public override void GetDamage(int damagePoints)
     {
         Health -= damagePoints;
 
@@ -123,7 +112,7 @@ public abstract class Human : MonoBehaviour, IDamagable
             Die();
     }
 
-    public virtual bool CanDamage()
+    public override bool CanGetDamage()
     {
         return true;
     }

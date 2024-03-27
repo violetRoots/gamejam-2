@@ -6,10 +6,9 @@ using UnityEngine;
 using DG.Tweening;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Enemy : MonoBehaviour, IBulletDamagable
+public class Enemy : Creature, IBulletDamagable
 {
     [Header("General")]
-    [SerializeField] private int startHealth = 100;
     [SerializeField] private int damage = 100;
 
     [Header("Movement")]
@@ -27,19 +26,11 @@ public class Enemy : MonoBehaviour, IBulletDamagable
     [Space(10)]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    public int Health
-    {
-        get => _currentHealth;
-        set => _currentHealth = value;
-    }
-
     private CrowdController _crowdController;
 
     private Vector3 _currentVelocity;
     private Vector3 _targetVelocity;
     private Vector3 _dampVelocity;
-
-    private int _currentHealth;
 
     private Color _startSpriteColor;
     private Tweener _damageEffectTweener;
@@ -51,11 +42,11 @@ public class Enemy : MonoBehaviour, IBulletDamagable
     }
 #endif
 
-    private void Awake()
+    protected override void Awake()
     {
-        _startSpriteColor = spriteRenderer.color;
+        base.Awake();
 
-        Health = startHealth;
+        _startSpriteColor = spriteRenderer.color;
     }
 
     private void Start()
@@ -85,8 +76,8 @@ public class Enemy : MonoBehaviour, IBulletDamagable
     {
         if (!collision.collider.TryGetComponent(out Human human)) return;
 
-        if(human.CanDamage())
-            human.Damage(damage);
+        if(human.CanGetDamage())
+            human.GetDamage(damage);
     }
 
     private Human GetNearestHuman(IEnumerable<Human> humans)
@@ -94,7 +85,7 @@ public class Enemy : MonoBehaviour, IBulletDamagable
         return humans.Where(human => human != null).OrderBy(human =>  Vector2.Distance(transform.position, human.transform.position)).FirstOrDefault();
     }
 
-    public virtual void Damage(int damagePoints)
+    public override void GetDamage(int damagePoints)
     {
         Health -= damagePoints;
 
@@ -108,15 +99,15 @@ public class Enemy : MonoBehaviour, IBulletDamagable
         }
     }
 
-    public virtual void Die()
+    public override void Die()
     {
         _damageEffectTweener?.Kill();
         _damageEffectTweener = null;
 
-        Destroy(gameObject);
+        base.Die();
     }
 
-    public bool CanDamage()
+    public override bool CanGetDamage()
     {
         return true;
     }
@@ -128,5 +119,10 @@ public class Enemy : MonoBehaviour, IBulletDamagable
 
         spriteRenderer.color = Color.white;
         _damageEffectTweener = spriteRenderer.DOColor(_startSpriteColor, damageEffectDuration);
+    }
+    
+    private void SpawnExperiencePoints()
+    {
+
     }
 }

@@ -432,7 +432,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6201786183456239899, guid: bafca0c688702dd498d5347c2e9e2184, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 45.5
+      value: 41.37
       objectReference: {fileID: 0}
     - target: {fileID: 6201786183456239899, guid: bafca0c688702dd498d5347c2e9e2184, type: 3}
       propertyPath: m_LocalPosition.y
@@ -634,7 +634,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.20840752, g: 0.20895769, b: 0.23584908, a: 0}
+  m_BackGroundColor: {r: 0.3941497, g: 0.64695007, b: 0.6886792, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -659,7 +659,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 13
+  orthographic size: 10.78
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1634,6 +1634,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7218647175679747900, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
+      propertyPath: diedMarker
+      value: 
+      objectReference: {fileID: 7050124942179578648, guid: 0de83e61be0ad4f49b0a227842b2ce53, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2112,7 +2116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6201786183456239899, guid: bafca0c688702dd498d5347c2e9e2184, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 43.218414
+      value: 40.93
       objectReference: {fileID: 0}
     - target: {fileID: 6201786183456239899, guid: bafca0c688702dd498d5347c2e9e2184, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2632,7 +2636,7 @@ MonoBehaviour:
   m_Follow: {fileID: 1057544388}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 13
+    OrthographicSize: 10.78
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -4144,7 +4148,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1395866405}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.39, y: 4.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -10,7 +10,7 @@ public class SplashEnemy : Enemy
 
     private bool _canSplash = true;
 
-    public override void Damage(int damagePoints)
+    public override void GetDamage(int damagePoints)
     {
         if (_canSplash)
         {
@@ -18,7 +18,7 @@ public class SplashEnemy : Enemy
             Splash();
         }
 
-        base.Damage(damagePoints);
+        base.GetDamage(damagePoints);
     }
 
     private void Splash()
@@ -28,8 +28,8 @@ public class SplashEnemy : Enemy
         {
             if (!hit.collider.TryGetComponent(out IDamagable damagable) || damagable == (IDamagable) this) continue;
 
-            if(damagable.CanDamage())
-                damagable.Damage(splashDamage);
+            if(damagable.CanGetDamage())
+                damagable.GetDamage(splashDamage);
         }
     }
 }
