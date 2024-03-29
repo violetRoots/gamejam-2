@@ -32,7 +32,7 @@ public class Enemy : Creature, IBulletDamagable
     private Vector3 _targetVelocity;
     private Vector3 _dampVelocity;
 
-    private Color _startSpriteColor;
+    private Color _maskColor;
     private Tweener _damageEffectTweener;
 
 #if UNITY_EDITOR
@@ -46,7 +46,7 @@ public class Enemy : Creature, IBulletDamagable
     {
         base.Awake();
 
-        _startSpriteColor = spriteRenderer.color;
+        _maskColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
     private void Start()
@@ -118,7 +118,7 @@ public class Enemy : Creature, IBulletDamagable
         _damageEffectTweener = null;
 
         spriteRenderer.color = Color.white;
-        _damageEffectTweener = spriteRenderer.DOColor(_startSpriteColor, damageEffectDuration);
+        _damageEffectTweener = spriteRenderer.DOColor(_maskColor, damageEffectDuration);
     }
     
     private void SpawnExperiencePoints()
