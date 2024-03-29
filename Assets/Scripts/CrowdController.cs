@@ -21,7 +21,8 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     [Header("Position Points")]
     [SerializeField] private float distanceBetweenCircles = 0.1f;
-    [SerializeField] private float colliderRadius = 1.0f;
+    [SerializeField] private float staticColliderRadius = 1.0f;
+    [SerializeField] private float rotatableColliderRadius = 1.0f;
     [SerializeField] private float circlePartsCount = 2.0f;
 
     [Space(10)]
@@ -38,8 +39,6 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     [SerializeField] private Transform collectAreaTransform;
 
-    private InputManager _inputManager;
-
     private List<CrowdHumanInfo> _rotatableHumanInofos => _humanInfos.Where(info => info.human is RotatableHuman).ToList();
     private List<CrowdHumanInfo> _staticHumanInofos => _humanInfos.Where(info => info.human is StaticHuman).ToList();
 
@@ -47,6 +46,8 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private List<RotatablePositionPoint> _rotatablePositionPoints = new List<RotatablePositionPoint>();
     private List<StaticPositionPoint> _staticPositionPoints = new List<StaticPositionPoint>();
+
+    private InputManager _inputManager;
 
     private int _circlesCount;
 
@@ -158,9 +159,9 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void SpawnStaticCircle(int circleIndex)
     {
-        var radius = 0.5f + circleIndex + distanceBetweenCircles * (circleIndex + 1) * colliderRadius;
+        var radius = 0.5f + circleIndex + distanceBetweenCircles * (circleIndex + 1) * staticColliderRadius;
         var length = 2.0f * Mathf.PI * radius;
-        var markersCount = (int)(length / colliderRadius);
+        var markersCount = (int)(length / staticColliderRadius);
         var angle = Mathf.Rad2Deg * 2.0f * Mathf.PI / markersCount;
         for (var j = 0; j < markersCount; j++)
         {
@@ -175,9 +176,9 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void SpawnRotatableCircle(int circleIndex)
     {
-        var radius = 0.5f + circleIndex + distanceBetweenCircles * (circleIndex + 1) * colliderRadius;
+        var radius = 0.5f + circleIndex + distanceBetweenCircles * (circleIndex + 1) * rotatableColliderRadius;
         var length = 2.0f * Mathf.PI * radius;
-        var markersCount = (int)(length / colliderRadius);
+        var markersCount = (int)(length / rotatableColliderRadius);
         var angle = Mathf.Rad2Deg * 2.0f * Mathf.PI / markersCount;
         var half = (int)(markersCount / circlePartsCount);
         for (var j = 0; j < half; j += 1 )
@@ -245,6 +246,8 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     {
         return _humanInfos;
     }
+
+    public int GetHumansCount() => _humanInfos.Count;
 
     private void UpdateCollectAreaScale()
     {

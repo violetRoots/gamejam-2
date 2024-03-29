@@ -25,11 +25,17 @@ public class Bullet : MonoBehaviour
         _initTime = Time.time;
         _direction = direction;
         _damage = damage;
+
+        transform.rotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, direction));
     }
 
     private void Update()
     {
-        CheckDestroy();
+        if (CheckDestroy())
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     private void FixedUpdate()
@@ -53,10 +59,8 @@ public class Bullet : MonoBehaviour
         bulletRigidbody.velocity = _direction * speed * Time.fixedDeltaTime;
     }
 
-    private void CheckDestroy()
+    private bool CheckDestroy()
     {
-        if (Time.time - _initTime <= destroyTimeout) return;
-
-        Destroy(gameObject);
+        return Time.time - _initTime > destroyTimeout;
     }
 }

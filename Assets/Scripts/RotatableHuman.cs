@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,18 @@ public class RotatableHuman : Human
 
     [Header("Rotation")]
     [SerializeField] private float rotationSpeed = 1.0f;
+    [SerializeField] private int framesToFlip = 100;
+    [SerializeField] private Transform rotationLogicContainer;
+    [SerializeField] private Transform rotationVisualContainer;
+    [SerializeField] private Transform staticVisualContainer;
 
     [Header("Bullets")]
     [SerializeField] private int damage = 100;
     [SerializeField] private float rechargeTime;
     [SerializeField] private float bulletCastRadius = 0.5f;
     [SerializeField] private float bulletCastDistance = 2.0f;
+    [MinMaxSlider(0.0f, 90.0f)]
+    [SerializeField] private Vector2 randomBulletAngleOffset = Vector2.up;
 
     [Space(10)]
     [SerializeField] private Transform bulletContainer;
@@ -29,8 +36,20 @@ public class RotatableHuman : Human
     private Vector3 _currentVelocity;
     private Vector3 _velocityDamp;
 
+    private Vector3 _currentRotationPartScale;
+    private Vector3 _currentStaticPartScale;
+    private bool _isFlip;
+    private int _canFlipCount;
+
     private float _lastShootTime;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        _currentRotationPartScale = rotationVisualContainer.localScale;
+        _currentStaticPartScale = staticVisualContainer.localScale;
+    }
     protected override void Move()
     {
         _targetVelocity = (_destinationPosition - transform.position).normalized * GetSpeed();
@@ -43,7 +62,22 @@ public class RotatableHuman : Human
         if (_inputManager.RotateDirection.magnitude <= 0) return;
 
         var angle = Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection) + _destinationAngleOffset;
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, angle), rotationSpeed * Time.fixedDeltaTime);
+        rotationVisualContainer.rotation = Quaternion.Lerp(rotationVisualContainer.rotation, Quaternion.Euler(0, 0, angle), rotationSpeed * Time.fixedDeltaTime);
+
+        if (Mathf.Abs(angle) >= 90.0f && !_isFlip || Mathf.Abs(angle) < 90.0f && _isFlip)
+            _canFlipCount++;
+        else
+            _canFlipCount = 0;
+
+        if(_canFlipCount >= framesToFlip)
+        {
+            _isFlip = !_isFlip;
+            _currentRotationPartScale.y *= -1;
+            _currentStaticPartScale.x *= -1;
+        }
+
+        rotationVisualContainer.localScale = _currentRotationPartScale;
+        staticVisualContainer.localScale = _currentStaticPartScale;
     }
 
     protected override void SkillAction()
@@ -70,14 +104,14 @@ public class RotatableHuman : Human
 
     private void CheckShoot()
     {
-        var hits = Physics2D.CircleCastAll(transform.position, bulletCastRadius, transform.rotation * Vector3.right, bulletCastDistance);
-        var hasEnemy = hits.Any(hit => hit.collider.TryGetComponent(out Enemy enemy));
+        var hits = Physics2D.CircleCastAll(transform.position, bulletCastRadius, bulletContainer.right, bulletCastDistance);
+        var enemyTransform = hits.Where(hit => hit.collider.TryGetComponent(out Enemy enemy)).Select(hit => hit.transform).FirstOrDefault();
 
-        if(!hasEnemy) return;
+        if(enemyTransform == null) return;
 
         if (!CanShoot()) return;
 
-        Shoot();
+        Shoot(enemyTransform.position);
     }
 
     private bool CanShoot()
@@ -85,10 +119,12 @@ public class RotatableHuman : Human
         return Time.time - _lastShootTime >= rechargeTime;
     }
 
-    private void Shoot()
+    private void Shoot(Vector3 enemyPos)
     {
         var bullet = Instantiate(bulletPrefab, bulletContainer.position, Quaternion.identity);
-        bullet.Init(transform.right, damage);
+        var angleOffset = Random.Range(randomBulletAngleOffset.x, randomBulletAngleOffset.y);
+        var direction = Quaternion.Euler(0.0f, 0.0f, angleOffset) * bulletContainer.right;
+        bullet.Init(direction, damage);
 
         _lastShootTime = Time.time; 
     }

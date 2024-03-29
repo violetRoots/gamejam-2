@@ -131,10 +131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cccf1c0343135224ca12a247d9456785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startHealth: 100
+  startHealth: 150
   diedMarker: {fileID: 5121773264856686770, guid: 54970378bfcd378408363b67a845883e, type: 3}
   damage: 100
-  speed: 120
+  speed: 90
   dampMultiplier: 1
   moveRadius: 50
   enemyRigidbody: {fileID: 4623109054373496346}

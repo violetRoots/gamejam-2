@@ -185,7 +185,7 @@ MonoBehaviour:
   startHealth: 1
   diedMarker: {fileID: 1707677481488704774, guid: 3ac40386ec8b0454495003f7c017a0d2, type: 3}
   damage: 100
-  speed: 120
+  speed: 50
   dampMultiplier: 1
   moveRadius: 50
   enemyRigidbody: {fileID: 8701143367947935109}

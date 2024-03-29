@@ -634,7 +634,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.3941497, g: 0.64695007, b: 0.6886792, a: 0}
+  m_BackGroundColor: {r: 0.44477302, g: 0.7924528, b: 0.32645065, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2607,6 +2607,7 @@ GameObject:
   m_Component:
   - component: {fileID: 783634120}
   - component: {fileID: 783634119}
+  - component: {fileID: 783634121}
   m_Layer: 0
   m_Name: CM vcam1
   m_TagString: Untagged
@@ -2669,6 +2670,21 @@ Transform:
   m_Father: {fileID: 1817933771}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &783634121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783634118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdc452a9279a8674c9d61f21cfae1a6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humansCountBounds: {x: 8, y: 50}
+  zoomBounds: {x: 8, y: 15}
+  zoomChangeSpeed: 2
 --- !u!1 &789094375
 GameObject:
   m_ObjectHideFlags: 0
@@ -4668,7 +4684,8 @@ MonoBehaviour:
   staticHumansContainer: {fileID: 1735179425}
   rotatableHumansContainer: {fileID: 114315630}
   distanceBetweenCircles: 0.1
-  colliderRadius: 1
+  staticColliderRadius: 0.9
+  rotatableColliderRadius: 1.6
   circlePartsCount: 4
   rotatablePositionPointPrefab: {fileID: 4838938922652712055, guid: 4d50d2e20a173bf4ca8ef9db5d4ade39, type: 3}
   staticPositionPointPrefab: {fileID: -446213389876860105, guid: eef8b6bf8efbb8a42b4866ca86791b7e, type: 3}
@@ -5987,7 +6004,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2061366036
 Transform:
   m_ObjectHideFlags: 0
