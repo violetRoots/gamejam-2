@@ -74,7 +74,7 @@ public abstract class Human : Creature
             SkillAction();
     }
 
-    protected bool IsInCrowd()
+    public bool IsInCrowd()
     {
         return _crowdController.HasHuman(this);
     }

@@ -1,3 +1,5 @@
+using DG.Tweening;
+using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +14,37 @@ public class StaticHuman : Human, IBulletDamagable
     [SerializeField] private float repulsionCastRadius = 20.0f;
     [SerializeField] private float repulsionSpeedMultiplier = 2.0f;
 
+    [Header("Heal")]
+    [SerializeField] private float healTargetCastRadius = 5.0f;
+    [MinMaxSlider(0.0f, 60.0f)]
+    [SerializeField] private Vector2 healCooldownBounds = Vector2.one;
+
+    [Space]
+    [SerializeField] private AnimationClip healAnimation;
+
+    [Header("Animation")]
+    [SerializeField] private Animator eggAnimator;
+
+    [Space]
+    [SerializeField] private HealIconController healIconPrefab;
+
     private bool _isSaved;
 
     private Vector3 _targetVelocity;
     private Vector3 _currentVelocity;
     private Vector3 _dampVelocity;
+
+    private float _lastHealTime;
+    private float _healCooldown;
+    private float _startHealCooldownOffset;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        SetHealCooldown();
+        _startHealCooldownOffset = Random.value * _healCooldown;
+    }
 
     protected override void Move()
     {
@@ -45,7 +73,11 @@ public class StaticHuman : Human, IBulletDamagable
 
     protected override void Rotate() { }
 
-    protected override void SkillAction() { }
+    protected override void SkillAction()
+    {
+        if(CanHeal())
+            Heal();
+    }
 
     protected override float GetSpeed()
     {
@@ -70,5 +102,42 @@ public class StaticHuman : Human, IBulletDamagable
     public void Save()
     {
         _isSaved = true;
+    }
+
+    private void SetHealCooldown()
+    {
+        _healCooldown = Random.Range(healCooldownBounds.x, healCooldownBounds.y);
+    }
+
+    private bool CanHeal()
+    {
+        return Time.time - _startHealCooldownOffset - _lastHealTime >= _healCooldown;
+    }
+
+    private void Heal()
+    {
+        var target = GetHealTarget();
+
+        if (target == null) return;
+
+        var healIcon = Instantiate(healIconPrefab, transform.position, Quaternion.identity);
+        healIcon.Init(transform, target);
+
+        _lastHealTime = Time.time;
+        SetHealCooldown();
+
+        eggAnimator.Play(healAnimation.name);
+    }
+
+    private Transform GetHealTarget()
+    {
+        var hits = Physics2D.CircleCastAll(transform.position, healTargetCastRadius, Vector2.zero);
+        var rotatableHumans = hits.Where(hit => hit.transform.TryGetComponent(out RotatableHuman human) && human.IsInCrowd()).Select(hit => hit.transform.GetComponent<RotatableHuman>()).ToArray();
+
+        if(rotatableHumans.Length <= 0)
+            return null;
+
+        var human = rotatableHumans[Random.Range(0, rotatableHumans.Length - 1)];
+        return human.transform;
     }
 }

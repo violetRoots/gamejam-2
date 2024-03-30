@@ -88,11 +88,14 @@ public class RotatableHuman : Human
     protected override float GetSpeed()
     {
         var distance = Vector2.Distance(transform.position, _destinationPosition);
-        if (_inputManager.RotateDirection.magnitude > 0) 
+        var rotationDirection = _inputManager.RotateDirection;
+        var moveDirection = _inputManager.MoveDirection;
+        if (rotationDirection.magnitude > 0)
         {
-            return walkSpeed * _inputManager.RotateDirection.magnitude * Mathf.Clamp01(distance / distantionToWalk);
+            var addiction = Vector2.Dot(moveDirection, rotationDirection) * moveDirection.magnitude * 0.5f;
+            return walkSpeed * (_inputManager.RotateDirection.magnitude + addiction) * Mathf.Clamp01(distance / distantionToWalk);
         }
-        else if (_inputManager.MoveDirection.magnitude > 0)
+        else if (moveDirection.magnitude > 0)
         {
             return walkSpeed * _inputManager.MoveDirection.magnitude * Mathf.Clamp01(distance / distantionToWalk);
         }
