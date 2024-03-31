@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class StaticHuman : Human, IBulletDamagable
+public class StaticHuman : Human, IDamagable
 {
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4.0f;
@@ -75,8 +75,8 @@ public class StaticHuman : Human, IBulletDamagable
 
     protected override void SkillAction()
     {
-        if(CanHeal())
-            Heal();
+        //if(CanHeal())
+        //    Heal();
     }
 
     protected override float GetSpeed()

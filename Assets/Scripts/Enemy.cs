@@ -26,7 +26,7 @@ public class Enemy : Creature, IBulletDamagable
     [Space(10)]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    private CrowdController _crowdController;
+    protected CrowdController _crowdController;
 
     private Vector3 _currentVelocity;
     private Vector3 _targetVelocity;
