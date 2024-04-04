@@ -242,12 +242,10 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public IEnumerable<CrowdHumanInfo> GetHumanInfos()
-    {
-        return _humanInfos;
-    }
-
     public int GetHumansCount() => _humanInfos.Count;
+    public IEnumerable<CrowdHumanInfo> GetHumanInfos() => _humanInfos;
+    public IEnumerable<CrowdHumanInfo> GetStaticHumanInfos() => _staticHumanInofos;
+    public IEnumerable<CrowdHumanInfo> GetRotatableHumanInfos() => _rotatableHumanInofos;
 
     private void UpdateCollectAreaScale()
     {

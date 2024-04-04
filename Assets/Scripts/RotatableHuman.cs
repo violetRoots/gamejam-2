@@ -12,6 +12,8 @@ public class RotatableHuman : Human
     [SerializeField] private float walkSpeed;
     [SerializeField] private float distantionToWalk = 0.5f;
     [SerializeField] private float dampMultiplier = 1.0f;
+    [SerializeField] private float runSpeed = 5.0f;
+    [SerializeField] private float distantionToRun = 10.0f;
 
     [Header("Rotation")]
     [SerializeField] private float rotationSpeed = 1.0f;
@@ -93,7 +95,15 @@ public class RotatableHuman : Human
         if (rotationDirection.magnitude > 0)
         {
             var addiction = Vector2.Dot(moveDirection, rotationDirection) * moveDirection.magnitude * 0.5f;
-            return walkSpeed * (_inputManager.RotateDirection.magnitude + addiction) * Mathf.Clamp01(distance / distantionToWalk);
+            var runValue = distance / distantionToRun;
+            if (runValue >= rotationDirection.magnitude)
+            {
+                return runSpeed * (runValue + addiction) * Mathf.Clamp01(distance / distantionToWalk);
+            }
+            else
+            {
+                return walkSpeed * (_inputManager.RotateDirection.magnitude + addiction) * Mathf.Clamp01(distance / distantionToWalk);
+            }
         }
         else if (moveDirection.magnitude > 0)
         {

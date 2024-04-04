@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using NaughtyAttributes;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : Creature, IBulletDamagable
@@ -17,14 +18,22 @@ public class Enemy : Creature, IBulletDamagable
     [SerializeField] private float moveRadius = 50.0f;
 
     [Space(10)]
-    [ReadOnly(true)]
+    [System.ComponentModel.ReadOnly(true)]
     [SerializeField] private Rigidbody2D enemyRigidbody;
 
     [Header("Damage Effect")]
     [SerializeField] private float damageEffectDuration = 0.2f;
 
     [Space(10)]
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer damageEffectSpriteRenderer;
+
+    [Header("Experience")]
+    [SerializeField]
+    [MinMaxSlider(1, 20)] private Vector2Int experiencePointsBounds = Vector2Int.one;
+    [SerializeField] private float experienceSpawnRadius = 3.0f;
+
+    [Space(10)]
+    [SerializeField] private Experience experiencePrefab;
 
     protected CrowdController _crowdController;
 
@@ -32,7 +41,7 @@ public class Enemy : Creature, IBulletDamagable
     private Vector3 _targetVelocity;
     private Vector3 _dampVelocity;
 
-    private Color _maskColor;
+    private Color _clearColor;
     private Tweener _damageEffectTweener;
 
 #if UNITY_EDITOR
@@ -46,7 +55,7 @@ public class Enemy : Creature, IBulletDamagable
     {
         base.Awake();
 
-        _maskColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        _clearColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
     private void Start()
@@ -99,12 +108,14 @@ public class Enemy : Creature, IBulletDamagable
         }
     }
 
-    public override void Die()
+    public override void DieInternal()
     {
         _damageEffectTweener?.Kill();
         _damageEffectTweener = null;
 
-        base.Die();
+        SpawnExperiencePoints();
+
+        base.DieInternal();
     }
 
     public override bool CanGetDamage()
@@ -117,12 +128,17 @@ public class Enemy : Creature, IBulletDamagable
         _damageEffectTweener?.Kill();
         _damageEffectTweener = null;
 
-        spriteRenderer.color = Color.white;
-        _damageEffectTweener = spriteRenderer.DOColor(_maskColor, damageEffectDuration);
+        damageEffectSpriteRenderer.color = Color.white;
+        _damageEffectTweener = damageEffectSpriteRenderer.DOColor(_clearColor, damageEffectDuration);
     }
     
     private void SpawnExperiencePoints()
     {
-
+        var pointsCount = Random.Range(experiencePointsBounds.x, experiencePointsBounds.y);
+        for (int i = 0; i < pointsCount; i++)
+        {
+            var position = transform.position + (Vector3) Random.insideUnitCircle * experienceSpawnRadius;
+            var experience = Instantiate(experiencePrefab, position, Quaternion.identity);
+        }
     }
 }

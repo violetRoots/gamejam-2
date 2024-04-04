@@ -141,7 +141,10 @@ MonoBehaviour:
   moveRadius: 50
   enemyRigidbody: {fileID: 4623109054373496346}
   damageEffectDuration: 0.2
-  spriteRenderer: {fileID: 4623109053166193591}
+  damageEffectSpriteRenderer: {fileID: 4623109053166193591}
+  experiencePointsBounds: {x: 3, y: 5}
+  experienceSpawnRadius: 1
+  experiencePrefab: {fileID: 1678544810369832646, guid: 1496540eed6960e43baf72c6561e7284, type: 3}
 --- !u!61 &4623109054373496345
 BoxCollider2D:
   m_ObjectHideFlags: 0

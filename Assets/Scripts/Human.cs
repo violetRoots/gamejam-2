@@ -94,14 +94,14 @@ public abstract class Human : Creature
         _destinationAngleOffset = angleOffset;
     }
 
-    public override void Die()
+    public override void DieInternal()
     {
         if (IsInCrowd())
         {
             _crowdController.RemoveHuman(this);
         }
 
-        base.Die();
+        base.DieInternal();
     }
 
     public override void GetDamage(int damagePoints)
@@ -116,4 +116,6 @@ public abstract class Human : Creature
     {
         return true;
     }
+
+    public virtual void AddExperiencePoints(int experiencePoints) { }
 }

@@ -159,7 +159,10 @@ MonoBehaviour:
   moveRadius: 50
   enemyRigidbody: {fileID: 3499161980559015256}
   damageEffectDuration: 0.2
-  spriteRenderer: {fileID: 3499161981498929397}
+  damageEffectSpriteRenderer: {fileID: 3499161981498929397}
+  experiencePointsBounds: {x: 3, y: 5}
+  experienceSpawnRadius: 1.5
+  experiencePrefab: {fileID: 1678544810369832646, guid: 1496540eed6960e43baf72c6561e7284, type: 3}
   staticHumanPrefab: {fileID: 7218647175679747900, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
 --- !u!212 &3499161981498929397 stripped
 SpriteRenderer:

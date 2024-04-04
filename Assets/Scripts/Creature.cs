@@ -15,6 +15,7 @@ public abstract class Creature : MonoBehaviour, IDamagable
     }
 
     private int _currentHealth;
+    private bool _isDied;
 
     protected virtual void Awake()
     {
@@ -23,12 +24,22 @@ public abstract class Creature : MonoBehaviour, IDamagable
 
     public abstract bool CanGetDamage();
     public abstract void GetDamage(int damagePoints);
-    public virtual void Die()
+    public void Die()
     {
-        if(diedMarker != null)
-            Instantiate(diedMarker, transform.position, Quaternion.identity);
+        if (IsDied()) return;
+
+        DieInternal();
+    }
+
+    public virtual void DieInternal()
+    {
+        //if(diedMarker != null)
+        //    Instantiate(diedMarker, transform.position, Quaternion.identity);
+
+        _isDied = true;
 
         Destroy(gameObject);
     }
 
+    public bool IsDied() => _isDied;
 }

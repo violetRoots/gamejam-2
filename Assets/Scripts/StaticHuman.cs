@@ -14,19 +14,14 @@ public class StaticHuman : Human, IDamagable
     [SerializeField] private float repulsionCastRadius = 20.0f;
     [SerializeField] private float repulsionSpeedMultiplier = 2.0f;
 
-    [Header("Heal")]
-    [SerializeField] private float healTargetCastRadius = 5.0f;
-    [MinMaxSlider(0.0f, 60.0f)]
-    [SerializeField] private Vector2 healCooldownBounds = Vector2.one;
+    [Header("Experience")]
+    [SerializeField] private int experiencePointsToReborn = 50;
+    [SerializeField] private float experienceEffectDuration = 0.2f;
 
     [Space]
-    [SerializeField] private AnimationClip healAnimation;
-
-    [Header("Animation")]
-    [SerializeField] private Animator eggAnimator;
-
-    [Space]
-    [SerializeField] private HealIconController healIconPrefab;
+    [SerializeField] private RotatableHuman rotatableHumanPrefab;
+    [SerializeField] private SpriteRenderer experienceEffectSpriteRenderer;
+    [SerializeField] private Transform experienceEffectMaskTransform;
 
     private bool _isSaved;
 
@@ -34,16 +29,17 @@ public class StaticHuman : Human, IDamagable
     private Vector3 _currentVelocity;
     private Vector3 _dampVelocity;
 
-    private float _lastHealTime;
-    private float _healCooldown;
-    private float _startHealCooldownOffset;
+    private int _currentExperiencePoints;
+    private Tweener _experienceEffectTweener;
+    private Color _startColor;
+    private Color _clearColor;
 
     protected override void Awake()
     {
         base.Awake();
 
-        SetHealCooldown();
-        _startHealCooldownOffset = Random.value * _healCooldown;
+        _startColor = experienceEffectSpriteRenderer.color;
+        _clearColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
     protected override void Move()
@@ -104,40 +100,33 @@ public class StaticHuman : Human, IDamagable
         _isSaved = true;
     }
 
-    private void SetHealCooldown()
+    public override void AddExperiencePoints(int points)
     {
-        _healCooldown = Random.Range(healCooldownBounds.x, healCooldownBounds.y);
+        _currentExperiencePoints += points;
+        experienceEffectMaskTransform.localScale = new Vector3(1.0f, 1.0f - (float)_currentExperiencePoints / experiencePointsToReborn, 1.0f);
+
+        if(_currentExperiencePoints >= experiencePointsToReborn)
+        {
+            if(!IsDied())
+            {
+                var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
+                _crowdController.AddHuman(rotatableHuman);
+            }
+
+            Die();
+        }
+        else
+        {
+            ExperienceEffect();
+        }
     }
 
-    private bool CanHeal()
+    private void ExperienceEffect()
     {
-        return Time.time - _startHealCooldownOffset - _lastHealTime >= _healCooldown;
-    }
+        _experienceEffectTweener?.Kill();
+        _experienceEffectTweener = null;
 
-    private void Heal()
-    {
-        var target = GetHealTarget();
-
-        if (target == null) return;
-
-        var healIcon = Instantiate(healIconPrefab, transform.position, Quaternion.identity);
-        healIcon.Init(transform, target);
-
-        _lastHealTime = Time.time;
-        SetHealCooldown();
-
-        eggAnimator.Play(healAnimation.name);
-    }
-
-    private Transform GetHealTarget()
-    {
-        var hits = Physics2D.CircleCastAll(transform.position, healTargetCastRadius, Vector2.zero);
-        var rotatableHumans = hits.Where(hit => hit.transform.TryGetComponent(out RotatableHuman human) && human.IsInCrowd()).Select(hit => hit.transform.GetComponent<RotatableHuman>()).ToArray();
-
-        if(rotatableHumans.Length <= 0)
-            return null;
-
-        var human = rotatableHumans[Random.Range(0, rotatableHumans.Length - 1)];
-        return human.transform;
+        experienceEffectSpriteRenderer.color = _startColor;
+        _experienceEffectTweener = experienceEffectSpriteRenderer.DOColor(_clearColor, experienceEffectDuration);
     }
 }
