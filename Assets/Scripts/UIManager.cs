@@ -10,11 +10,4 @@ public class UIManager : SingletonMonoBehaviourBase<UIManager>
 
     [SerializeField] private Joystick moveJoystick;
     [SerializeField] private Joystick rotateJoystick;
-
-    [SerializeField] private ExperiencePanel experiencePanel;
-
-    public void UpdateExperiencePanel(int currentLevel, int currentExperience, int levelExperience)
-    {
-        experiencePanel.UpdateVisual(currentLevel, currentExperience, levelExperience);
-    }
 }

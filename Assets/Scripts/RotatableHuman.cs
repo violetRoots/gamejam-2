@@ -137,13 +137,15 @@ public class RotatableHuman : Human
         var bullet = Instantiate(bulletPrefab, bulletContainer.position, Quaternion.identity);
         var angleOffset = Random.Range(randomBulletAngleOffset.x, randomBulletAngleOffset.y);
         var direction = Quaternion.Euler(0.0f, 0.0f, angleOffset) * bulletContainer.right;
+
+        float bulletDamage = damage;
+        if (_skillManager.IsSkillApplied<AttackUpSkill>(out SkillRuntimeInfo attackUpSkill))
+            bulletDamage += damage * ((AttackUpSkill)attackUpSkill.Config).attackFactorMultiplier / 100.0f;
+
+        Debug.Log(bulletDamage);
+
         bullet.Init(direction, damage);
 
         _lastShootTime = Time.time; 
     }
-
-    //protected override bool CanMove()
-    //{
-    //    return _inputManager.RotateDirection.magnitude > 0;
-    //}
 }

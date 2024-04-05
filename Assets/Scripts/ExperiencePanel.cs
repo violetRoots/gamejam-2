@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ExperiencePanel : MonoBehaviour
+public class ExperiencePanel : View
 {
     [SerializeField] private Image filler;
     [SerializeField] private TextMeshProUGUI levelText;

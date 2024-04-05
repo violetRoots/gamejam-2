@@ -8,14 +8,19 @@ public class LevelManager : SingletonMonoBehaviourBase<LevelManager>
 
     private int LevelExperiencePoints => levelsExperiencePoints[Mathf.Clamp(_currentLevel, 0, levelsExperiencePoints.Length - 1)];
 
-    private UIManager _uIManager;
+    private ViewManager _viewManager;
 
     private int _currentLevel;
     private int _currentLevelExperiencePoints;
 
+    private ExperiencePanel _experiencePanel;
+    private SkillPanel _skillPanel;
+
     private void Start()
     {
-        _uIManager = UIManager.Instance;
+        _viewManager = ViewManager.Instance;
+        _experiencePanel = _viewManager.Show<ExperiencePanel>();
+        _skillPanel = _viewManager.Get<SkillPanel>();
 
         UpdateUIVisual();
     }
@@ -27,6 +32,8 @@ public class LevelManager : SingletonMonoBehaviourBase<LevelManager>
         {
             _currentLevelExperiencePoints = 0;
             _currentLevel++;
+
+            _skillPanel.Show();
         }
 
         UpdateUIVisual();
@@ -35,6 +42,6 @@ public class LevelManager : SingletonMonoBehaviourBase<LevelManager>
 
     private void UpdateUIVisual()
     {
-        _uIManager.UpdateExperiencePanel(_currentLevel, _currentLevelExperiencePoints, LevelExperiencePoints);
+        _experiencePanel.UpdateVisual(_currentLevel, _currentLevelExperiencePoints, LevelExperiencePoints);
     }
 }
