@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 using UnityEngine.UI;
 
-public class ViewManager : SingletonMonoBehaviourBase<ViewManager>
+public class ViewManager : SingletonFromResourcesBase<ViewManager>
 {
     [SerializeField] private View[] views;
+
+    [SerializeField] private Canvas canvas;
 
     private List<View> _instantiatedViews = new List<View>();
 
@@ -23,7 +24,7 @@ public class ViewManager : SingletonMonoBehaviourBase<ViewManager>
     private T Instantiate<T>() where T : View
     {
         var viewPrefab = views.OfType<T>().FirstOrDefault();
-        var view = Instantiate(viewPrefab, transform);
+        var view = Instantiate(viewPrefab, canvas.transform);
         view.OnCreate();
 
         view.gameObject.SetActive(false);

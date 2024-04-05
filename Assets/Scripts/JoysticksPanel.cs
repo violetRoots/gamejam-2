@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : SingletonMonoBehaviourBase<UIManager>
+public class JoysticksPanel : View
 {
     public Joystick MoveJoystick => moveJoystick;
     public Joystick RotateJoystick => rotateJoystick;

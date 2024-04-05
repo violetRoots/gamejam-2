@@ -7,19 +7,19 @@ public class InputManager : SingletonMonoBehaviourBase<InputManager>
     public Vector2 MoveDirection { get; private set; }
     public Vector2 RotateDirection { get; private set; }
 
-    private UIManager _uiManager;
+    private JoysticksPanel _joysticksPanel;
 
     private void Start()
     {
-        _uiManager = UIManager.Instance;
+        _joysticksPanel = ViewManager.Instance.Show<JoysticksPanel>();
     }
 
     private void Update()
     {
         Vector2 movedir;
-        if(_uiManager.MoveJoystick.Direction.magnitude > 0)
+        if(_joysticksPanel.MoveJoystick.Direction.magnitude > 0)
         {
-            movedir = _uiManager.MoveJoystick.Direction;
+            movedir = _joysticksPanel.MoveJoystick.Direction;
         }
         else
         {
@@ -28,6 +28,6 @@ public class InputManager : SingletonMonoBehaviourBase<InputManager>
         }
 
         MoveDirection = movedir;
-        RotateDirection = _uiManager.RotateJoystick.Direction;
+        RotateDirection = _joysticksPanel.RotateJoystick.Direction;
     }
 }
