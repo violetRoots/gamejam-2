@@ -105,13 +105,9 @@ public class StaticHuman : Human, IDamagable
         _currentExperiencePoints += points;
         experienceEffectMaskTransform.localScale = new Vector3(1.0f, 1.0f - (float)_currentExperiencePoints / experiencePointsToReborn, 1.0f);
 
-        if(_currentExperiencePoints >= experiencePointsToReborn)
+        if(_currentExperiencePoints >= CalculateExperiencePointsToReborn())
         {
-            if(!IsDied())
-            {
-                var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
-                _crowdController.AddHuman(rotatableHuman);
-            }
+            Reborn();
 
             Die();
         }
@@ -128,5 +124,20 @@ public class StaticHuman : Human, IDamagable
 
         experienceEffectSpriteRenderer.color = _startColor;
         _experienceEffectTweener = experienceEffectSpriteRenderer.DOColor(_clearColor, experienceEffectDuration);
+    }
+
+    private void Reborn()
+    {
+        var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
+        _crowdController.AddHuman(rotatableHuman);
+    }
+
+    private int CalculateExperiencePointsToReborn()
+    {
+        float newExpPoints = experiencePointsToReborn;
+        if (_skillManager.IsSkillApplied(out RebornUpSkill rebornSkillConfig))
+            newExpPoints += experiencePointsToReborn * rebornSkillConfig.experienceFactorMultiplier / 100.0f;
+
+        return (int) newExpPoints;
     }
 }

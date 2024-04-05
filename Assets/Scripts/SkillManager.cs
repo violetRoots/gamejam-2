@@ -42,4 +42,11 @@ public class SkillManager : SingletonMonoBehaviourBase<SkillManager>
 
         return resSkill != null;
     }
+
+    public bool IsSkillApplied<T>(out T resSkill) where T : SkillConfig
+    {
+        resSkill = (T) _appliedSkills.Select(skill => skill.Config).Where(config => config is T).FirstOrDefault();
+
+        return resSkill != null;
+    }
 }

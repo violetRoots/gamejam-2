@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Creature : MonoBehaviour, IDamagable
 {
     [Header("Creature Configs")]
-    [SerializeField] private int startHealth = 100;
+    [SerializeField] protected int startHealth = 100;
     [SerializeField] private GameObject diedMarker;
 
     public int Health
@@ -19,7 +19,7 @@ public abstract class Creature : MonoBehaviour, IDamagable
 
     protected virtual void Awake()
     {
-        Health = startHealth;
+        SetStartHealth();
     }
 
     public abstract bool CanGetDamage();
@@ -42,4 +42,9 @@ public abstract class Creature : MonoBehaviour, IDamagable
     }
 
     public bool IsDied() => _isDied;
+
+    protected virtual void SetStartHealth()
+    {
+        Health = startHealth;
+    }
 }

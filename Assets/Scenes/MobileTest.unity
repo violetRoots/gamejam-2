@@ -4916,7 +4916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce11a73878c79b6428eebcf14d666649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelsExperiencePoints: 64000000f4010000
+  levelsExperiencePoints: 64000000
 --- !u!4 &1631280293 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6712325101928477589, guid: 93c2fc09bd914ee49979b42e74ea74a1, type: 3}
@@ -6671,8 +6671,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillConfigs:
-  - {fileID: 11400000, guid: 228fd02e0c31bf04ebfcf4275f2f9c0c, type: 2}
   - {fileID: 11400000, guid: b81c4bb415fdf074ebcf2d8acf19e416, type: 2}
+  - {fileID: 11400000, guid: fef77c3113871224297594664c67d5eb, type: 2}
+  - {fileID: 11400000, guid: ae180dff222c44342af83f393a5c7ebe, type: 2}
+  - {fileID: 11400000, guid: 4e81ffc1c7b102044ade71b6cbf5e9a9, type: 2}
+  - {fileID: 11400000, guid: 228fd02e0c31bf04ebfcf4275f2f9c0c, type: 2}
 --- !u!4 &2126872628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6201786183456239899, guid: bafca0c688702dd498d5347c2e9e2184, type: 3}

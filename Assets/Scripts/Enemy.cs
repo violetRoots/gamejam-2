@@ -11,6 +11,7 @@ public class Enemy : Creature, IBulletDamagable
 {
     [Header("General")]
     [SerializeField] private int damage = 100;
+    [SerializeField] private float damageOffset = 5.0f;
 
     [Header("Movement")]
     [SerializeField] private float speed = 1.0f;
@@ -85,8 +86,11 @@ public class Enemy : Creature, IBulletDamagable
     {
         if (!collision.collider.TryGetComponent(out Human human)) return;
 
-        if(human.CanGetDamage())
+        if (human.CanGetDamage())
+        {
             human.GetDamage(damage);
+            transform.position += (Vector3) collision.contacts[0].normal * damageOffset;
+        }
     }
 
     private Human GetNearestHuman(IEnumerable<Human> humans)

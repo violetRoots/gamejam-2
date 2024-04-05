@@ -55,13 +55,13 @@ public abstract class Human : Creature
 
     protected override void Awake()
     {
-        base.Awake();
-
         _inputManager = InputManager.Instance;
         _crowdController = CrowdController.Instance;
         _skillManager = SkillManager.Instance;
 
         _destinationPosition = transform.position;
+
+        base.Awake();
     }
 
     private void FixedUpdate()

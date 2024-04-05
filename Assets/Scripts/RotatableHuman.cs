@@ -129,7 +129,7 @@ public class RotatableHuman : Human
 
     private bool CanShoot()
     {
-        return Time.time - _lastShootTime >= rechargeTime;
+        return Time.time - _lastShootTime >= CalculateRechargeTime();
     }
 
     private void Shoot(Vector3 enemyPos)
@@ -138,14 +138,37 @@ public class RotatableHuman : Human
         var angleOffset = Random.Range(randomBulletAngleOffset.x, randomBulletAngleOffset.y);
         var direction = Quaternion.Euler(0.0f, 0.0f, angleOffset) * bulletContainer.right;
 
-        float bulletDamage = damage;
-        if (_skillManager.IsSkillApplied<AttackUpSkill>(out SkillRuntimeInfo attackUpSkill))
-            bulletDamage += damage * ((AttackUpSkill)attackUpSkill.Config).attackFactorMultiplier / 100.0f;
+        var bulletDamage = CalculateDamage();
 
-        Debug.Log(bulletDamage);
-
-        bullet.Init(direction, damage);
+        bullet.Init(direction, bulletDamage);
 
         _lastShootTime = Time.time; 
+    }
+
+    private int CalculateDamage()
+    {
+        float newBulletDamage = damage;
+        if (_skillManager.IsSkillApplied(out AttackUpSkill attackUpSkillConfig))
+            newBulletDamage += damage * attackUpSkillConfig.attackFactorMultiplier / 100.0f;
+
+        return (int) newBulletDamage;
+    }
+
+    private float CalculateRechargeTime()
+    {
+        var newRechargeTime = rechargeTime;
+        if (_skillManager.IsSkillApplied(out AttackSpeedUpSkill attackSpeedUpSkillConfig))
+            newRechargeTime += rechargeTime * 0.99f * attackSpeedUpSkillConfig.attackSpeedFactorMultiplier / 100.0f;
+
+        return newRechargeTime;
+    }
+
+    protected override void SetStartHealth()
+    {
+        float newStartHealth = startHealth;
+        if (_skillManager.IsSkillApplied(out RotatableHumanHpUpSkill rotatableHumanHpUpSkillConfig))
+            newStartHealth += damage * rotatableHumanHpUpSkillConfig.hpFactorMultiplier / 100.0f;
+
+        Health = (int) newStartHealth;
     }
 }
