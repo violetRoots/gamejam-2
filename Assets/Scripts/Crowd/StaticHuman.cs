@@ -34,9 +34,9 @@ public class StaticHuman : Human, IDamagable
     private Color _startColor;
     private Color _clearColor;
 
-    protected override void Awake()
+    protected override void OnEnable()
     {
-        base.Awake();
+        base.OnEnable();
 
         _startColor = experienceEffectSpriteRenderer.color;
         _clearColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);

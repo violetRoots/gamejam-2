@@ -53,7 +53,7 @@ public abstract class Human : Creature
         return IsInCrowd();
     }
 
-    protected override void Awake()
+    protected override void OnEnable()
     {
         _inputManager = InputManager.Instance;
         _crowdController = CrowdController.Instance;
@@ -61,7 +61,7 @@ public abstract class Human : Creature
 
         _destinationPosition = transform.position;
 
-        base.Awake();
+        base.OnEnable();
     }
 
     private void FixedUpdate()

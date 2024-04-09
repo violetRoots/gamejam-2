@@ -37,7 +37,6 @@ public class LevelManager : SingletonMonoBehaviourBase<LevelManager>
         }
 
         UpdateUIVisual();
-        //Debug.Log($"Current level {_currentLevel}: {_currentLevelExperiencePoints}/{levelExperience}");
     }
 
     private void UpdateUIVisual()

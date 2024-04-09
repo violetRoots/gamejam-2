@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd510c8600edb046b6e549d9c0d92dd, type: 3}
+  m_Name: WSG_Stage_Test_1
+  m_EditorClassIdentifier: 
+  duration: 300
+  customData:
+    movementSpeed: 8
+  generateObjects:
+  - instanceName: Enemy
+    poolObjectValue:
+      instance: {fileID: 4623109054373496347, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
+      hideInSpawnMenu: 0
+    frequencyCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 10
+        inSlope: -0.69182473
+        outSlope: -0.69182473
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6021746
+        value: 9.583401
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3979791
+        value: 1.4819571
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 4.762191
+        value: 5.4462376
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 3.2264197
+        inSlope: -0.42380655
+        outSlope: -0.42380655
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    x: 'time: 1 unit = duration / 10 (30 sec)'
+    y: 'frequency: 1 unit = 1 obj / 5 sec (0,2 obj/sec)'
+    objectsCount: 275+-10
+  - instanceName: BigEnemy
+    poolObjectValue:
+      instance: {fileID: 3499161980559015257, guid: e3ca74e74dbd7f34a9dd6515b316edee, type: 3}
+      hideInSpawnMenu: 0
+    frequencyCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.5896301
+        inSlope: -0.017719137
+        outSlope: -0.017719137
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2.662668
+        value: 0.54244995
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 9.146232
+        inSlope: 1.1726036
+        outSlope: 1.1726036
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    x: 'time: 1 unit = duration / 10 (30 sec)'
+    y: 'frequency: 1 unit = 1 obj / 5 sec (0,2 obj/sec)'
+    objectsCount: 190+-10

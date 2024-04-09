@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cf062aed0e887c409c1031ca8a6477e, type: 3}
+  m_Name: WSG_Settings
+  m_EditorClassIdentifier: 
+  frequencySecondsPerUnit: 5
+  minFrequencyGenerationValue: 0.1
+  maxFrequencyGenerationValue: 100
+  areaSettings: {fileID: 11400000, guid: 85562700ca031534db77bf1886475488, type: 2}
+  poolSettings: {fileID: 11400000, guid: 7ca74be20e07f3a4790a464908b08d4b, type: 2}
+  spawnPointer2D: {fileID: -6979314674022946624, guid: 5bd80f5635857124b8c5762fcfdecbfd, type: 3}

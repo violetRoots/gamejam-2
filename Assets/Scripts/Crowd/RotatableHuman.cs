@@ -45,9 +45,9 @@ public class RotatableHuman : Human
 
     private float _lastShootTime;
 
-    protected override void Awake()
+    protected override void OnEnable()
     {
-        base.Awake();
+        base.OnEnable();
 
         _currentRotationPartScale = rotationVisualContainer.localScale;
         _currentStaticPartScale = staticVisualContainer.localScale;

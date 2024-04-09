@@ -16,7 +16,6 @@ public class Enemy : Creature, IBulletDamagable
     [Header("Movement")]
     [SerializeField] private float speed = 1.0f;
     [SerializeField] private float dampMultiplier = 1.0f;
-    [SerializeField] private float moveRadius = 50.0f;
 
     [Space(10)]
     [System.ComponentModel.ReadOnly(true)]
@@ -52,9 +51,9 @@ public class Enemy : Creature, IBulletDamagable
     }
 #endif
 
-    protected override void Awake()
+    protected override void OnEnable()
     {
-        base.Awake();
+        base.OnEnable();
 
         _clearColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
@@ -69,7 +68,7 @@ public class Enemy : Creature, IBulletDamagable
         var humans = _crowdController.GetHumanInfos().Select(info => info.human).ToArray();
         var nearestHuman = GetNearestHuman(humans);
 
-        if (nearestHuman != null && Vector2.Distance(transform.position, nearestHuman.transform.position) < moveRadius)
+        if (nearestHuman != null)
         {
             _targetVelocity = (nearestHuman.transform.position - transform.position).normalized * speed * Time.fixedDeltaTime;
         }

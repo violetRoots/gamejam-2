@@ -39,7 +39,7 @@ public class Experience : MonoBehaviour
 
 
         _levelManager.AddExperiencePoints(Points);
-        if(_targetHuman != null && !_targetHuman.IsDied())
+        if(_targetHuman != null && !_targetHuman.IsDead())
             _targetHuman.AddExperiencePoints(Points);
 
         Destroy(gameObject);
