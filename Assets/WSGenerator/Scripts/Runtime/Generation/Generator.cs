@@ -1,10 +1,11 @@
 using UnityEngine;
 using NaughtyAttributes;
 using UnityEditor;
+using SkyCrush.Utility;
 
 namespace SkyCrush.WSGenerator
 {
-    public partial class Generator : MonoBehaviour
+    public partial class Generator : SingletonMonoBehaviourBase<Generator>
     {
         [SerializeField] 
         private Settings settings;

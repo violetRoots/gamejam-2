@@ -8,6 +8,9 @@ namespace SkyCrush.WSGenerator
         public Sequence Sequence => sequence;
         public StageManager StageManager => _stageManager;
         public PoolManager PoolManager => _poolManager;
+
+        public float StageProcess => stageProcess;
+
         public bool IsInitilized { get; private set; }
 
         private PoolManager _poolManager = new PoolManager();

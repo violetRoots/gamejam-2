@@ -51,6 +51,7 @@ MonoBehaviour:
   - {fileID: 9190807970568368104, guid: de3fcf52aae2d7d4fb283fb73e5024ba, type: 3}
   - {fileID: 5428125197550142842, guid: 65268d034664f93448b1ebe77545a187, type: 3}
   - {fileID: 7410411021768856457, guid: ca49b6f49e6330f4a8c78809eca47922, type: 3}
+  - {fileID: 602230432045511978, guid: 612d1e1736caa984ab8d77f583f7fbe7, type: 3}
   canvas: {fileID: 8941260341931227008}
 --- !u!1 &5512408272698793640
 GameObject:

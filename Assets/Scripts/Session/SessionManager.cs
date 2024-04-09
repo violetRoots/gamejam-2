@@ -5,39 +5,18 @@ using UnityEngine;
 
 public class SessionManager : SingletonMonoBehaviourBase<SessionManager>
 {
-    public class SessionInfo
+    private ViewManager _viewManager;
+
+    private void Awake()
     {
-        public TimeSpan time;
-    }
+        _viewManager = ViewManager.Instance;
 
-    [SerializeField] private float completeSessionTime = 5.0f;
-
-    private float _startSessionTime;
-    private SessionInfo _sessionInfo = new SessionInfo();
-
-    private SessionTimerPanel _timerPanel;
-
-    private void Start()
-    {
-        _timerPanel = ViewManager.Instance.Get<SessionTimerPanel>();
-
-        StartSession();
-    }
-
-    private void Update()
-    {
-        UpdateSessionTime();
-    }
-
-    private void UpdateSessionTime()
-    {
-        _sessionInfo.time = TimeSpan.FromSeconds(Time.time - _startSessionTime);
-
+        _viewManager.Show<SessionProgressPanel>();
     }
 
     private void StartSession()
     {
-        _startSessionTime = Time.time;
+        
     }
 
     public void EndSession()
