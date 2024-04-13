@@ -25,11 +25,14 @@ public class StaticHuman : Human, IDamagable
 
     [Header("Mine")]
     [SerializeField] private float mineSpawnTimeout = 0.5f;
+    [SerializeField] private float mineSpawnDistance = 2.0f;
+    [SerializeField] private float mineBombTimeout = 4.5f;
 
     [Space]
     [SerializeField] private Mine minePrefab;
 
-    [Header("")]
+    [Header("Thorns")]
+    [SerializeField] private ThornsController thornsController;
 
     private bool _isSaved;
 
@@ -43,6 +46,7 @@ public class StaticHuman : Human, IDamagable
     private Color _clearColor;
 
     private float _lastMineSpawnTime;
+    private Vector3 _lastMineSpawnPosition;
     private float _randomMineSpawnTimeOffset;
 
     protected override void OnEnable()
@@ -89,6 +93,9 @@ public class StaticHuman : Human, IDamagable
             if (CanSpawnMine())
                 SpawnMine();
         }
+
+        var activateThorns = _skillManager.IsSkillApplied<ThornsSkill>();
+        thornsController.gameObject.SetActive(activateThorns);
 
         //if(CanHeal())
         //    Heal();
@@ -162,12 +169,17 @@ public class StaticHuman : Human, IDamagable
 
     private bool CanSpawnMine()
     {
-        return Time.time - _lastMineSpawnTime >= mineSpawnTimeout + mineSpawnTimeout * _randomMineSpawnTimeOffset;
+        return (Time.time - _lastMineSpawnTime >= mineSpawnTimeout + mineSpawnTimeout * _randomMineSpawnTimeOffset
+               && Vector2.Distance(_lastMineSpawnPosition, transform.position) >= mineSpawnDistance)
+               || Time.time - _lastMineSpawnTime >= mineSpawnTimeout + mineBombTimeout;
     }
 
     private void SpawnMine()
     {
         var mine = Instantiate(minePrefab, transform.position, Quaternion.identity);
+        mine.Init(mineBombTimeout);
+
         _lastMineSpawnTime = Time.time;
+        _lastMineSpawnPosition = transform.position;
     }
 }

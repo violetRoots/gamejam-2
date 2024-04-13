@@ -5,13 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public class Mine : MonoBehaviour
 {
-    [SerializeField] private float bombTimeout = 1.0f;
     [SerializeField] private float bombRadius = 2.0f;
     [SerializeField] private int bombDamage = 100;
 
-    private void Start()
+    public void Init(float timeout)
     {
-        StartCoroutine(BombProcess());
+        StartCoroutine(BombProcess(timeout));
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -21,9 +20,9 @@ public class Mine : MonoBehaviour
         Bomb();
     }
 
-    private IEnumerator BombProcess()
+    private IEnumerator BombProcess(float timeout)
     {
-        yield return new WaitForSeconds(bombTimeout);
+        yield return new WaitForSeconds(timeout);
 
         Bomb();
     }

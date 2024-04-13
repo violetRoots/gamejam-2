@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bombTimeout: 4.5
   bombRadius: 2
-  bombDamage: 100
+  bombDamage: 30
 --- !u!58 &4261421733327369751
 CircleCollider2D:
   m_ObjectHideFlags: 0
