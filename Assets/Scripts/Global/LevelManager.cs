@@ -25,18 +25,33 @@ public class LevelManager : SingletonMonoBehaviourBase<LevelManager>
         UpdateUIVisual();
     }
 
+    private void Update()
+    {
+        if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.Equals))
+        {
+            LevelUp();
+            UpdateUIVisual();
+        }
+    }
+
+
     public void AddExperiencePoints(int value)
     {
         _currentLevelExperiencePoints += value;
         if (_currentLevelExperiencePoints >= LevelExperiencePoints)
         {
-            _currentLevelExperiencePoints = 0;
-            _currentLevel++;
-
-            _skillPanel.Show();
+            LevelUp();
         }
 
         UpdateUIVisual();
+    }
+
+    private void LevelUp()
+    {
+        _currentLevelExperiencePoints = 0;
+        _currentLevel++;
+
+        _skillPanel.Show();
     }
 
     private void UpdateUIVisual()

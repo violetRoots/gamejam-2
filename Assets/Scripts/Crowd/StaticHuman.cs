@@ -23,6 +23,14 @@ public class StaticHuman : Human, IDamagable
     [SerializeField] private SpriteRenderer experienceEffectSpriteRenderer;
     [SerializeField] private Transform experienceEffectMaskTransform;
 
+    [Header("Mine")]
+    [SerializeField] private float mineSpawnTimeout = 0.5f;
+
+    [Space]
+    [SerializeField] private Mine minePrefab;
+
+    [Header("")]
+
     private bool _isSaved;
 
     private Vector3 _targetVelocity;
@@ -34,12 +42,17 @@ public class StaticHuman : Human, IDamagable
     private Color _startColor;
     private Color _clearColor;
 
+    private float _lastMineSpawnTime;
+    private float _randomMineSpawnTimeOffset;
+
     protected override void OnEnable()
     {
         base.OnEnable();
 
         _startColor = experienceEffectSpriteRenderer.color;
         _clearColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+
+        _randomMineSpawnTimeOffset = Random.value;
     }
 
     protected override void Move()
@@ -71,6 +84,12 @@ public class StaticHuman : Human, IDamagable
 
     protected override void SkillAction()
     {
+        if(_skillManager.IsSkillApplied<MineSkill>())
+        {
+            if (CanSpawnMine())
+                SpawnMine();
+        }
+
         //if(CanHeal())
         //    Heal();
     }
@@ -139,5 +158,16 @@ public class StaticHuman : Human, IDamagable
             newExpPoints += experiencePointsToReborn * rebornSkillConfig.experienceFactorMultiplier / 100.0f;
 
         return (int) newExpPoints;
+    }
+
+    private bool CanSpawnMine()
+    {
+        return Time.time - _lastMineSpawnTime >= mineSpawnTimeout + mineSpawnTimeout * _randomMineSpawnTimeOffset;
+    }
+
+    private void SpawnMine()
+    {
+        var mine = Instantiate(minePrefab, transform.position, Quaternion.identity);
+        _lastMineSpawnTime = Time.time;
     }
 }

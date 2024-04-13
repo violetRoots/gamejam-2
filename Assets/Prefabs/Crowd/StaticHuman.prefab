@@ -477,11 +477,12 @@ MonoBehaviour:
   moveDampMultiplier: 2
   repulsionCastRadius: 1.5
   repulsionSpeedMultiplier: 2
-  experiencePointsToReborn: 200
+  experiencePointsToReborn: 500
   experienceEffectDuration: 2.5
   rotatableHumanPrefab: {fileID: 5461741862349187132, guid: 6c6956498886d6b438f7c4474cef0494, type: 3}
   experienceEffectSpriteRenderer: {fileID: 8088705487872040077}
   experienceEffectMaskTransform: {fileID: 4764350245074640950}
+  minePrefab: {fileID: 8434971239821733048, guid: 032c6e0f36d6d10408eabbf15bca2947, type: 3}
 --- !u!50 &2102653948
 Rigidbody2D:
   serializedVersion: 4
