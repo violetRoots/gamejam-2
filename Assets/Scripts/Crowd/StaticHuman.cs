@@ -20,6 +20,7 @@ public class StaticHuman : Human, IDamagable
 
     [Space]
     [SerializeField] private RotatableHuman rotatableHumanPrefab;
+    [SerializeField] private RotatableHuman dragonPrefab;
     [SerializeField] private SpriteRenderer experienceEffectSpriteRenderer;
     [SerializeField] private Transform experienceEffectMaskTransform;
 
@@ -154,8 +155,17 @@ public class StaticHuman : Human, IDamagable
 
     private void Reborn()
     {
-        var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
-        _crowdController.AddHuman(rotatableHuman);
+        var random = Random.value * 100.0f;
+        if(_skillManager.IsSkillApplied(out DragonSkill dragonSkill) && random <= dragonSkill.bornChance)
+        {
+            var dragon = Instantiate(dragonPrefab, transform.position, Quaternion.identity);
+            _crowdController.AddHuman(dragon);
+        }
+        else
+        {
+            var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
+            _crowdController.AddHuman(rotatableHuman);
+        }
     }
 
     private int CalculateExperiencePointsToReborn()

@@ -7,7 +7,7 @@ using DG.Tweening;
 using NaughtyAttributes;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Enemy : Creature, IBulletDamagable
+public class Enemy : Creature, IProjectileDamagable
 {
     [Header("General")]
     [SerializeField] private int damage = 100;

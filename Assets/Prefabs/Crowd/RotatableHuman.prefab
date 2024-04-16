@@ -466,13 +466,7 @@ MonoBehaviour:
   rotationLogicContainer: {fileID: 5816090205033458191}
   rotationVisualContainer: {fileID: 4905853682919726314}
   staticVisualContainer: {fileID: 324207284773109542}
-  damage: 60
-  rechargeTime: 0.3
-  bulletCastRadius: 3
-  bulletCastDistance: 5
-  randomBulletAngleOffset: {x: 3, y: 10}
-  bulletContainer: {fileID: 1235864947050133836}
-  bulletPrefab: {fileID: 3029767028681060272, guid: 8617ba919b484f241b17517631dbdf64, type: 3}
+  shooterController: {fileID: 7778139465958476333}
 --- !u!58 &987193250908754039
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -767,6 +761,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &7758461959972399107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1075995053460088412}
+  m_Layer: 8
+  m_Name: BulletContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1075995053460088412
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758461959972399107}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1235864947050133836}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7974558312856401870
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,8 +801,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1235864947050133836}
+  - component: {fileID: 7778139465958476333}
   m_Layer: 8
-  m_Name: BulletContainer
+  m_Name: ShooterController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -795,10 +821,30 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1075995053460088412}
   - {fileID: 1394045853723320162}
   m_Father: {fileID: 4905853682919726314}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7778139465958476333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7974558312856401870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2833ea6d7d2f2b4ba8b2ca04cad2fa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 50
+  rechargeTime: 0.5
+  shootCastRadius: 2
+  shootCastDistance: 10
+  randomBulletAngleOffset: {x: 0, y: 15}
+  bulletContainer: {fileID: 1075995053460088412}
+  bulletPrefab: {fileID: 3029767028681060272, guid: 8617ba919b484f241b17517631dbdf64, type: 3}
 --- !u!1 &8099598500760599976
 GameObject:
   m_ObjectHideFlags: 0

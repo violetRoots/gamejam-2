@@ -22,17 +22,8 @@ public class RotatableHuman : Human
     [SerializeField] private Transform rotationVisualContainer;
     [SerializeField] private Transform staticVisualContainer;
 
-    [Header("Bullets")]
-    [SerializeField] private int damage = 100;
-    [SerializeField] private float rechargeTime;
-    [SerializeField] private float bulletCastRadius = 0.5f;
-    [SerializeField] private float bulletCastDistance = 2.0f;
-    [MinMaxSlider(0.0f, 90.0f)]
-    [SerializeField] private Vector2 randomBulletAngleOffset = Vector2.up;
-
-    [Space(10)]
-    [SerializeField] private Transform bulletContainer;
-    [SerializeField] private Bullet bulletPrefab;
+    [Header("Shooter")]
+    [SerializeField] private HumanShooterController shooterController;
 
     private Vector3 _targetVelocity;
     private Vector3 _currentVelocity;
@@ -42,8 +33,6 @@ public class RotatableHuman : Human
     private Vector3 _currentStaticPartScale;
     private bool _isFlip;
     private int _canFlipCount;
-
-    private float _lastShootTime;
 
     protected override void OnEnable()
     {
@@ -84,7 +73,7 @@ public class RotatableHuman : Human
 
     protected override void SkillAction()
     {
-        CheckShoot();
+        shooterController.CheckShoot();
     }
 
     protected override float GetSpeed()
@@ -115,59 +104,11 @@ public class RotatableHuman : Human
         }
     }
 
-    private void CheckShoot()
-    {
-        var hits = Physics2D.CircleCastAll(transform.position, bulletCastRadius, bulletContainer.right, bulletCastDistance);
-        var enemyTransform = hits.Where(hit => hit.collider.TryGetComponent(out Enemy enemy)).Select(hit => hit.transform).FirstOrDefault();
-
-        if(enemyTransform == null) return;
-
-        if (!CanShoot()) return;
-
-        Shoot(enemyTransform.position);
-    }
-
-    private bool CanShoot()
-    {
-        return Time.time - _lastShootTime >= CalculateRechargeTime();
-    }
-
-    private void Shoot(Vector3 enemyPos)
-    {
-        var bullet = Instantiate(bulletPrefab, bulletContainer.position, Quaternion.identity);
-        var angleOffset = Random.Range(randomBulletAngleOffset.x, randomBulletAngleOffset.y);
-        var direction = Quaternion.Euler(0.0f, 0.0f, angleOffset) * bulletContainer.right;
-
-        var bulletDamage = CalculateDamage();
-
-        bullet.Init(direction, bulletDamage);
-
-        _lastShootTime = Time.time; 
-    }
-
-    private int CalculateDamage()
-    {
-        float newBulletDamage = damage;
-        if (_skillManager.IsSkillApplied(out AttackUpSkill attackUpSkillConfig))
-            newBulletDamage += damage * attackUpSkillConfig.attackFactorMultiplier / 100.0f;
-
-        return (int) newBulletDamage;
-    }
-
-    private float CalculateRechargeTime()
-    {
-        var newRechargeTime = rechargeTime;
-        if (_skillManager.IsSkillApplied(out AttackSpeedUpSkill attackSpeedUpSkillConfig))
-            newRechargeTime += rechargeTime * 0.99f * attackSpeedUpSkillConfig.attackSpeedFactorMultiplier / 100.0f;
-
-        return newRechargeTime;
-    }
-
     protected override void SetStartHealth()
     {
         float newStartHealth = startHealth;
         if (_skillManager.IsSkillApplied(out RotatableHumanHpUpSkill rotatableHumanHpUpSkillConfig))
-            newStartHealth += damage * rotatableHumanHpUpSkillConfig.hpFactorMultiplier / 100.0f;
+            newStartHealth += startHealth * rotatableHumanHpUpSkillConfig.hpFactorMultiplier / 100.0f;
 
         Health = (int) newStartHealth;
     }
