@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c499a76282833964eb0f90d3cea7ff31, type: 3}
   m_Name: GameConfigs
   m_EditorClassIdentifier: 
-  hpFactorMultiplier: 0
+  enableMobileInput: 0
+  mainMenuSceneName: MainMenu
+  gameplaySceneName: MobileTest

@@ -10,22 +10,34 @@ public class HumanShooterController : MonoBehaviour
     [SerializeField] private float shootCastRadius = 0.5f;
     [SerializeField] private float shootCastDistance = 2.0f;
 
+    protected InputManager _inputManager;
     protected SkillManager _skillManager;
 
     private float _lastShootTime;
 
     private void Start()
     {
+        _inputManager = InputManager.Instance;
         _skillManager = SkillManager.Instance;
     }
 
     public virtual void CheckShoot() { }
     protected virtual bool CanShoot()
     {
-        var hits = Physics2D.CircleCastAll(transform.position, shootCastRadius, transform.right, shootCastDistance);
-        var enemyTransform = hits.Where(hit => hit.collider.TryGetComponent(out Enemy enemy)).Select(hit => hit.transform).FirstOrDefault();
+        bool canShoot = false;
+        if (!_inputManager.IsMobileInputEnabled)
+        {
+            canShoot = _inputManager.FireButtonPressed && Time.time - _lastShootTime >= CalculateRechargeTime();
+        }
+        else
+        {
+            var hits = Physics2D.CircleCastAll(transform.position, shootCastRadius, transform.right, shootCastDistance);
+            var enemyTransform = hits.Where(hit => hit.collider.TryGetComponent(out Enemy enemy)).Select(hit => hit.transform).FirstOrDefault();
 
-        return Time.time - _lastShootTime >= CalculateRechargeTime() && enemyTransform != null;
+            canShoot = Time.time - _lastShootTime >= CalculateRechargeTime() && enemyTransform != null;
+        }
+
+        return canShoot;
     }
 
     protected virtual void Shoot()
