@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class RotatableHuman : Human
 {
@@ -106,10 +105,6 @@ public class RotatableHuman : Human
 
     protected override void SetStartHealth()
     {
-        float newStartHealth = startHealth;
-        if (_skillManager.IsSkillApplied(out RotatableHumanHpUpSkill rotatableHumanHpUpSkillConfig))
-            newStartHealth += startHealth * rotatableHumanHpUpSkillConfig.hpFactorMultiplier / 100.0f;
-
-        Health = (int) newStartHealth;
+        Health = startHealth;
     }
 }

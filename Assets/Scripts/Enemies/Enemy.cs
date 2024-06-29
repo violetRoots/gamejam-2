@@ -116,8 +116,6 @@ public class Enemy : Creature, IProjectileDamagable
         _damageEffectTweener?.Kill();
         _damageEffectTweener = null;
 
-        SpawnExperiencePoints();
-
         base.DieInternal();
     }
 
@@ -133,15 +131,5 @@ public class Enemy : Creature, IProjectileDamagable
 
         damageEffectSpriteRenderer.color = Color.white;
         _damageEffectTweener = damageEffectSpriteRenderer.DOColor(_clearColor, damageEffectDuration);
-    }
-    
-    private void SpawnExperiencePoints()
-    {
-        var pointsCount = Random.Range(experiencePointsBounds.x, experiencePointsBounds.y);
-        for (int i = 0; i < pointsCount; i++)
-        {
-            var position = transform.position + (Vector3) Random.insideUnitCircle * experienceSpawnRadius;
-            var experience = Instantiate(experiencePrefab, position, Quaternion.identity);
-        }
     }
 }

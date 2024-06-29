@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScene.unity
     guid: abd265e5a003d534c86ebab31c43967d
   - enabled: 1
-    path: Assets/Scenes/MobileTest.unity
+    path: Assets/Scenes/DucksMobileTest.unity
     guid: 20acaf71275afca42a6fe9bdbfde989b
   m_configObjects: {}

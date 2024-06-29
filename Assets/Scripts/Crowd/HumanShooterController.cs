@@ -11,14 +11,12 @@ public class HumanShooterController : MonoBehaviour
     [SerializeField] private float shootCastDistance = 2.0f;
 
     protected InputManager _inputManager;
-    protected SkillManager _skillManager;
 
     private float _lastShootTime;
 
     private void Start()
     {
         _inputManager = InputManager.Instance;
-        _skillManager = SkillManager.Instance;
     }
 
     public virtual void CheckShoot() { }
@@ -47,19 +45,11 @@ public class HumanShooterController : MonoBehaviour
 
     protected int CalculateDamage()
     {
-        float newBulletDamage = damage;
-        if (_skillManager.IsSkillApplied(out AttackUpSkill attackUpSkillConfig))
-            newBulletDamage += damage * attackUpSkillConfig.attackFactorMultiplier / 100.0f;
-
-        return (int)newBulletDamage;
+        return damage;
     }
 
     protected float CalculateRechargeTime()
     {
-        var newRechargeTime = rechargeTime;
-        if (_skillManager.IsSkillApplied(out AttackSpeedUpSkill attackSpeedUpSkillConfig))
-            newRechargeTime += rechargeTime * 0.99f * attackSpeedUpSkillConfig.attackSpeedFactorMultiplier / 100.0f;
-
-        return newRechargeTime;
+        return rechargeTime;
     }
 }

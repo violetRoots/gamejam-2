@@ -14,14 +14,7 @@ public class Experience : MonoBehaviour
     [SerializeField] private Vector2 endPositionOffset = Vector2.up;
     [SerializeField] private float endScale = 1.0f;
 
-    private LevelManager _levelManager;
-
     private Human _targetHuman;
-
-    private void Start()
-    {
-        _levelManager = LevelManager.Instance;
-    }
 
     public void Init(Human target)
     {
@@ -37,8 +30,6 @@ public class Experience : MonoBehaviour
                                           endScale,
                                           lerpSpeed);
 
-
-        _levelManager.AddExperiencePoints(Points);
         if(_targetHuman != null && !_targetHuman.IsDead())
             _targetHuman.AddExperiencePoints(Points);
 

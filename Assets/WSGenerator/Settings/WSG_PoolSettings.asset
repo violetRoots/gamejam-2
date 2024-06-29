@@ -15,5 +15,3 @@ MonoBehaviour:
   poolObjectsInfo:
   - instance: {fileID: 4623109054373496347, guid: ab53830c4bcb90c4ba7e497485aa7386, type: 3}
     hideInSpawnMenu: 0
-  - instance: {fileID: 3499161980559015257, guid: e3ca74e74dbd7f34a9dd6515b316edee, type: 3}
-    hideInSpawnMenu: 0

@@ -17,7 +17,6 @@ public abstract class Human : Creature
 
     protected InputManager _inputManager;
     protected CrowdController _crowdController;
-    protected SkillManager _skillManager;
 
     protected Vector3 _destinationPosition;
     protected float _destinationAngleOffset;
@@ -57,7 +56,6 @@ public abstract class Human : Creature
     {
         _inputManager = InputManager.Instance;
         _crowdController = CrowdController.Instance;
-        _skillManager = SkillManager.Instance;
 
         _destinationPosition = transform.position;
 

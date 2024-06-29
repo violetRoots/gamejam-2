@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class StaticHuman : Human, IDamagable
+public class StaticHuman : Human, IProjectileDamagable
 {
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4.0f;
@@ -31,9 +31,6 @@ public class StaticHuman : Human, IDamagable
 
     [Space]
     [SerializeField] private Mine minePrefab;
-
-    [Header("Thorns")]
-    [SerializeField] private ThornsController thornsController;
 
     private bool _isSaved;
 
@@ -87,20 +84,7 @@ public class StaticHuman : Human, IDamagable
 
     protected override void Rotate() { }
 
-    protected override void SkillAction()
-    {
-        if(_skillManager.IsSkillApplied<MineSkill>())
-        {
-            if (CanSpawnMine())
-                SpawnMine();
-        }
-
-        var activateThorns = _skillManager.IsSkillApplied<ThornsSkill>();
-        thornsController.gameObject.SetActive(activateThorns);
-
-        //if(CanHeal())
-        //    Heal();
-    }
+    protected override void SkillAction() { }
 
     protected override float GetSpeed()
     {
@@ -155,26 +139,13 @@ public class StaticHuman : Human, IDamagable
 
     private void Reborn()
     {
-        var random = Random.value * 100.0f;
-        if(_skillManager.IsSkillApplied(out DragonSkill dragonSkill) && random <= dragonSkill.bornChance)
-        {
-            var dragon = Instantiate(dragonPrefab, transform.position, Quaternion.identity);
-            _crowdController.AddHuman(dragon);
-        }
-        else
-        {
-            var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
-            _crowdController.AddHuman(rotatableHuman);
-        }
+        var rotatableHuman = Instantiate(rotatableHumanPrefab, transform.position, Quaternion.identity);
+        _crowdController.AddHuman(rotatableHuman);
     }
 
     private int CalculateExperiencePointsToReborn()
     {
-        float newExpPoints = experiencePointsToReborn;
-        if (_skillManager.IsSkillApplied(out RebornUpSkill rebornSkillConfig))
-            newExpPoints += experiencePointsToReborn * rebornSkillConfig.experienceFactorMultiplier / 100.0f;
-
-        return (int) newExpPoints;
+        return experiencePointsToReborn;
     }
 
     private bool CanSpawnMine()
