@@ -6,7 +6,6 @@ public abstract class Creature : MonoBehaviour, IDamagable
 {
     [Header("Creature Configs")]
     [SerializeField] protected int startHealth = 100;
-    [SerializeField] private GameObject diedMarker;
 
     public int Health
     {
@@ -34,9 +33,6 @@ public abstract class Creature : MonoBehaviour, IDamagable
 
     public virtual void DieInternal()
     {
-        //if(diedMarker != null)
-        //    Instantiate(diedMarker, transform.position, Quaternion.identity);
-
         SetDead(true);
 
         Destroy(gameObject);

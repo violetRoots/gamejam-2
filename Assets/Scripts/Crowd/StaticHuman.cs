@@ -62,27 +62,29 @@ public class StaticHuman : Human, IDamagable
 
     protected override void Move()
     {
-        var hits = Physics2D.CircleCastAll(transform.position, repulsionCastRadius, Vector2.zero);
-        var rotatableHits = hits.Where(hit => hit.collider.TryGetComponent(out RotatableHuman rotatableHuman)).ToArray();
+        //var hits = Physics2D.CircleCastAll(transform.position, repulsionCastRadius, Vector2.zero);
+        //var rotatableHits = hits.Where(hit => hit.collider.TryGetComponent(out RotatableHuman rotatableHuman)).ToArray();
 
-        var repulsionVelocity = Vector3.zero;
-        var normal = Vector3.zero;
-        var destinationDir = (_destinationPosition - transform.position).normalized;
-        var hitDistance = 0.0f;
-        if (rotatableHits.Length > 0)
-        {
-            var distance = Vector2.Distance(rotatableHits[0].transform.position, transform.position);
-            hitDistance = rotatableHits[0].distance;
-            normal = rotatableHits[0].normal;
-            var newDir = ((Vector2) normal * 0.5f + new Vector2(-rotatableHits[0].normal.y, rotatableHits[0].normal.x)).normalized;
-            var dir = Vector2.Dot(destinationDir, newDir) > 0 ? newDir : -newDir;
-            repulsionVelocity = dir * repulsionSpeedMultiplier;
-        }
+        //var repulsionVelocity = Vector3.zero;
+        //var normal = Vector3.zero;
+        //var destinationDir = (_destinationPosition - transform.position).normalized;
+        //var hitDistance = 0.0f;
+        //if (rotatableHits.Length > 0)
+        //{
+        //    var distance = Vector2.Distance(rotatableHits[0].transform.position, transform.position);
+        //    hitDistance = rotatableHits[0].distance;
+        //    normal = rotatableHits[0].normal;
+        //    var newDir = ((Vector2) normal * 0.5f + new Vector2(-rotatableHits[0].normal.y, rotatableHits[0].normal.x)).normalized;
+        //    var dir = Vector2.Dot(destinationDir, newDir) > 0 ? newDir : -newDir;
+        //    repulsionVelocity = dir * repulsionSpeedMultiplier;
+        //}
 
-        _targetVelocity = (destinationDir + repulsionVelocity + normal).normalized * GetSpeed();
+        //_targetVelocity = (destinationDir + repulsionVelocity + normal).normalized * GetSpeed();
 
-        _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, moveDampMultiplier * Time.fixedDeltaTime);
-        _humanRigidbody.velocity = _currentVelocity;
+        //_currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, moveDampMultiplier * Time.fixedDeltaTime);
+        //_humanRigidbody.velocity = _currentVelocity;
+
+        transform.position = _destinationPosition;
     }
 
     protected override void Rotate() { }

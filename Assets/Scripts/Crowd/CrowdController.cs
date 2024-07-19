@@ -12,6 +12,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     [Header("General")]
     [SerializeField] private float crowdMoveSpeed = 1.0f;
+    [SerializeField] private float crowdRotationSpeed = 100.0f;
     [SerializeField] private float dampMoveMultiplier = 1.0f;
 
     [Space(10)]
@@ -30,6 +31,15 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     [SerializeField] private StaticPositionPoint staticPositionPointPrefab;
     [SerializeField] private Transform rotatablePositionPointsContainer;
     [SerializeField] private Transform staticPositionPointsContainer;
+
+    [Header("Physics")]
+    [SerializeField] private float wallDetectionRaycastDistance = 1.5f;
+    [Layer]
+    [SerializeField] private string wallLayerName;
+
+    [Header("Queen")]
+    [SerializeField] private Queen _queen;
+    [SerializeField] private StaticPositionPoint queenPositionPoint;
 
     [Header("Collect Area")]
     [MinMaxSlider(0, 20)]
@@ -55,9 +65,15 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     private Vector3 _targetVelocity;
     private Vector3 _dampVelocity;
 
+    private float _previousRotationAngle;
+
+    private int _wallLayer;
+
     private void Start()
     {
         _inputManager = InputManager.Instance;
+
+        _wallLayer = 1 << LayerMask.NameToLayer(wallLayerName);
     }
 
     private void FixedUpdate()
@@ -67,21 +83,71 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
         MoveRotatableHumans();
         MoveStaticHumans();
+
+        MoveQueen();
     }
 
     private void MoveCrowd()
     {
-        _targetVelocity = _inputManager.MoveDirection * crowdMoveSpeed;
+        _targetVelocity = GetObstacleVelocity(_inputManager.MoveDirection) * crowdMoveSpeed;
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, dampMoveMultiplier * Time.fixedDeltaTime);
         moveRigidbody.velocity = _currentVelocity;
     }
 
+    private Vector2 GetObstacleVelocity(Vector3 direction)
+    {
+        Vector3 allProjections = Vector3.zero;
+
+        foreach (var humanInfo in _humanInfos)
+        {
+            var pos = humanInfo.human.transform.position;
+            var dir = (humanInfo.human.transform.position - _queen.transform.position).normalized;
+            var hit = Physics2D.Raycast(pos, dir, wallDetectionRaycastDistance, _wallLayer);
+
+            if(!hit) continue;
+
+            var projection = Vector3.Project(dir, hit.normal);
+            allProjections += projection * (wallDetectionRaycastDistance - hit.distance);
+        }
+
+        return direction - allProjections;
+    }
+
     private void RotateCrowd()
     {
-        if (_inputManager.RotateDirection.magnitude <= 0) return;
+        //if (_inputManager.RotateDirection.magnitude <= 0) return;
 
-        var angle = -Vector2.SignedAngle(_inputManager.RotateDirection, Vector3.right);
-        rotatablePositionPointsContainer.transform.rotation = Quaternion.Euler(0, 0, angle);
+        _previousRotationAngle = rotatablePositionPointsContainer.transform.rotation.eulerAngles.z;
+        var angle = GetObstacleDiffRotationAngle(_inputManager.RotateDirection);
+        rotatablePositionPointsContainer.transform.rotation = 
+            Quaternion.Lerp(
+                Quaternion.Euler(0,0,_previousRotationAngle), 
+                Quaternion.Euler(0, 0, angle), 
+                crowdRotationSpeed * Time.deltaTime
+                );
+    }
+
+    private float GetObstacleDiffRotationAngle(Vector3 direction)
+    {
+        var rotatableHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is RotatableHuman).ToArray();
+        var angle = -Vector2.SignedAngle(direction, Vector3.right);
+
+        foreach (var humanInfo in rotatableHumanInfos)
+        {
+            var pos = humanInfo.human.transform.position;
+            var dir = new Vector2(-direction.y, direction.x);
+            dir = Mathf.Abs(angle) >= 90.0f ? -dir : dir;
+            var hit = Physics2D.Raycast(pos, dir, 3.0f, _wallLayer);
+            Debug.DrawRay(pos, dir, Color.red);
+
+            if (hit)
+            {
+                Debug.Log(hit.distance);
+                return _previousRotationAngle;
+            }
+        }
+
+        return angle;
     }
 
     private void MoveStaticHumans()
@@ -96,6 +162,12 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
             staticHumanInfos[i].human.SetDestinationPosition(destinationPoint.transform.position);
             staticHumanInfos[i].human.SetAngleOffset(destinationPoint.AngleOffset);
         }
+    }
+
+    private void MoveQueen()
+    {
+        _queen.SetDestinationPosition(queenPositionPoint.transform.position);
+        _queen.SetAngleOffset(queenPositionPoint.AngleOffset);
     }
 
     private void MoveRotatableHumans()
@@ -119,7 +191,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void UpdatePositionPoints()
     {
-        _circlesCount = 0;
+        _circlesCount = 1;
 
         UpdateStaticPositionPointsCount();
         UpdateRotatablePositionPointsCount();

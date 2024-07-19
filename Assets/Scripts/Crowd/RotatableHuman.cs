@@ -43,9 +43,11 @@ public class RotatableHuman : Human
     }
     protected override void Move()
     {
-        _targetVelocity = (_destinationPosition - transform.position).normalized * GetSpeed();
-        _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
-        _humanRigidbody.velocity = _currentVelocity;
+        //_targetVelocity = (_destinationPosition - transform.position).normalized * GetSpeed();
+        //_currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _velocityDamp, Time.fixedDeltaTime * dampMultiplier);
+        //_humanRigidbody.velocity = _currentVelocity;
+
+        transform.position = _destinationPosition;
     }
 
     protected override void Rotate()
