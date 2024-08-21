@@ -27,6 +27,9 @@ public class Enemy : Creature, IProjectileDamagable
     [Space(10)]
     [SerializeField] private SpriteRenderer damageEffectSpriteRenderer;
 
+    [Header("Aim")]
+    [SerializeField] private SpriteRenderer aimHighlightSpriteRenderer;
+
     [Header("Experience")]
     [SerializeField]
     [MinMaxSlider(1, 20)] private Vector2Int experiencePointsBounds = Vector2Int.one;

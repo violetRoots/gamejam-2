@@ -5,12 +5,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(CircleCollider2D))]
 public abstract class Human : Creature
 {
     [Space(10)]
     [ReadOnly(true)]
-    [SerializeField] protected Collider2D _collider;
+    [SerializeField] protected CircleCollider2D _circleCollider;
 
     [ReadOnly(true)]
     [SerializeField] protected Rigidbody2D _humanRigidbody;
@@ -25,7 +25,7 @@ public abstract class Human : Creature
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        _collider = GetComponent<Collider2D>();
+        _circleCollider = GetComponent<CircleCollider2D>();
         _humanRigidbody = GetComponent<Rigidbody2D>();
     }
 #endif
@@ -89,11 +89,6 @@ public abstract class Human : Creature
     public void SetDestinationPosition(Vector3 destinationPosition)
     {
         _destinationPosition = destinationPosition;
-    }
-
-    public Vector3 GetStaightDirection()
-    {
-        return _destinationPosition - transform.position;
     }
 
     public void SetAngleOffset(float angleOffset)

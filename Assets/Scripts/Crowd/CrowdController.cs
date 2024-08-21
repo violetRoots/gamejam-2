@@ -12,11 +12,12 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     [Header("General")]
     [SerializeField] private float crowdMoveSpeed = 1.0f;
-    [SerializeField] private float crowdRotationSpeed = 100.0f;
     [SerializeField] private float dampMoveMultiplier = 1.0f;
 
     [Space(10)]
     [SerializeField] private Rigidbody2D moveRigidbody;
+    [SerializeField] private CircleCollider2D crowdCollider;
+    [SerializeField] private Transform crowdColliderIndicator;
     [SerializeField] private Transform staticHumansContainer;
     [SerializeField] private Transform rotatableHumansContainer;
 
@@ -31,11 +32,6 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     [SerializeField] private StaticPositionPoint staticPositionPointPrefab;
     [SerializeField] private Transform rotatablePositionPointsContainer;
     [SerializeField] private Transform staticPositionPointsContainer;
-
-    [Header("Physics")]
-    [SerializeField] private float wallDetectionRaycastDistance = 1.5f;
-    [Layer]
-    [SerializeField] private string wallLayerName;
 
     [Header("Queen")]
     [SerializeField] private Queen _queen;
@@ -65,15 +61,9 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     private Vector3 _targetVelocity;
     private Vector3 _dampVelocity;
 
-    private float _previousRotationAngle;
-
-    private int _wallLayer;
-
     private void Start()
     {
         _inputManager = InputManager.Instance;
-
-        _wallLayer = 1 << LayerMask.NameToLayer(wallLayerName);
     }
 
     private void FixedUpdate()
@@ -89,65 +79,17 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
     private void MoveCrowd()
     {
-        _targetVelocity = GetObstacleVelocity(_inputManager.MoveDirection) * crowdMoveSpeed;
+        _targetVelocity = _inputManager.MoveDirection * crowdMoveSpeed;
         _currentVelocity = Vector3.SmoothDamp(_currentVelocity, _targetVelocity, ref _dampVelocity, dampMoveMultiplier * Time.fixedDeltaTime);
         moveRigidbody.velocity = _currentVelocity;
     }
 
-    private Vector2 GetObstacleVelocity(Vector3 direction)
-    {
-        Vector3 allProjections = Vector3.zero;
-
-        foreach (var humanInfo in _humanInfos)
-        {
-            var pos = humanInfo.human.transform.position;
-            var dir = (humanInfo.human.transform.position - _queen.transform.position).normalized;
-            var hit = Physics2D.Raycast(pos, dir, wallDetectionRaycastDistance, _wallLayer);
-
-            if(!hit) continue;
-
-            var projection = Vector3.Project(dir, hit.normal);
-            allProjections += projection * (wallDetectionRaycastDistance - hit.distance);
-        }
-
-        return direction - allProjections;
-    }
-
     private void RotateCrowd()
     {
-        //if (_inputManager.RotateDirection.magnitude <= 0) return;
+        if (_inputManager.RotateDirection.magnitude <= 0) return;
 
-        _previousRotationAngle = rotatablePositionPointsContainer.transform.rotation.eulerAngles.z;
-        var angle = GetObstacleDiffRotationAngle(_inputManager.RotateDirection);
-        rotatablePositionPointsContainer.transform.rotation = 
-            Quaternion.Lerp(
-                Quaternion.Euler(0,0,_previousRotationAngle), 
-                Quaternion.Euler(0, 0, angle), 
-                crowdRotationSpeed * Time.deltaTime
-                );
-    }
-
-    private float GetObstacleDiffRotationAngle(Vector3 direction)
-    {
-        var rotatableHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is RotatableHuman).ToArray();
-        var angle = -Vector2.SignedAngle(direction, Vector3.right);
-
-        foreach (var humanInfo in rotatableHumanInfos)
-        {
-            var pos = humanInfo.human.transform.position;
-            var dir = new Vector2(-direction.y, direction.x);
-            dir = Mathf.Abs(angle) >= 90.0f ? -dir : dir;
-            var hit = Physics2D.Raycast(pos, dir, 3.0f, _wallLayer);
-            Debug.DrawRay(pos, dir, Color.red);
-
-            if (hit)
-            {
-                Debug.Log(hit.distance);
-                return _previousRotationAngle;
-            }
-        }
-
-        return angle;
+        var angle = -Vector2.SignedAngle(_inputManager.RotateDirection, Vector3.right);
+        rotatablePositionPointsContainer.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     private void MoveStaticHumans()
@@ -174,7 +116,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
     {
         var rotatableHumanInfos = _humanInfos.Where(humanInfo => humanInfo.human is RotatableHuman).ToArray();
         var usedHumanInfos = new List<CrowdHumanInfo>();
-        for (var i  = 0; i < _rotatablePositionPoints.Count && i < rotatableHumanInfos.Length; i++)
+        for (var i = 0; i < _rotatablePositionPoints.Count && i < rotatableHumanInfos.Length; i++)
         {
             var destinationPoint = _rotatablePositionPoints[i];
             var info = rotatableHumanInfos.Where(info => !usedHumanInfos.Contains(info))
@@ -187,6 +129,14 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
             info.human.SetDestinationPosition(destinationPoint.transform.position);
             info.human.SetAngleOffset(destinationPoint.AngleOffset);
         }
+    }
+
+    private void UpdateCrowdCollider()
+    {
+        var radius = (_circlesCount + 1) * (rotatableColliderRadius + staticColliderRadius) * 0.5f;
+        crowdCollider.radius = radius;
+        crowdColliderIndicator.localScale = Vector3.one * radius * 2.0f;
+
     }
 
     private void UpdatePositionPoints()
@@ -297,6 +247,7 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
         UpdatePositionPoints();
         UpdateCollectAreaScale();
+        UpdateCrowdCollider();
     }
 
     public void RemoveHuman(Human human)
@@ -309,8 +260,9 @@ public class CrowdController : SingletonMonoBehaviourBase<CrowdController>
 
         UpdatePositionPoints();
         UpdateCollectAreaScale();
+        UpdateCrowdCollider();
 
-        if(_humanInfos.Count <= 0)
+        if (_humanInfos.Count <= 0)
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

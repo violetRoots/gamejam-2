@@ -18,12 +18,13 @@ public class RotatableHuman : Human
     [Header("Rotation")]
     [SerializeField] private float rotationSpeed = 1.0f;
     [SerializeField] private int framesToFlip = 100;
-    [SerializeField] private Transform rotationLogicContainer;
-    [SerializeField] private Transform rotationVisualContainer;
+    [SerializeField] private Transform rotationContainer;
     [SerializeField] private Transform staticVisualContainer;
 
     [Header("Shooter")]
     [SerializeField] private HumanShooterController shooterController;
+    [SerializeField] private EnemyDetectionController enemyDetectionController;
+    [SerializeField] private SpriteRenderer aimHighlightSpriteRenderer;
 
     private Vector3 _targetVelocity;
     private Vector3 _currentVelocity;
@@ -34,11 +35,13 @@ public class RotatableHuman : Human
     private bool _isFlip;
     private int _canFlipCount;
 
+    private Enemy _target;
+
     protected override void OnEnable()
     {
         base.OnEnable();
 
-        _currentRotationPartScale = rotationVisualContainer.localScale;
+        _currentRotationPartScale = rotationContainer.localScale;
         _currentStaticPartScale = staticVisualContainer.localScale;
     }
     protected override void Move()
@@ -54,8 +57,17 @@ public class RotatableHuman : Human
     {
         if (_inputManager.RotateDirection.magnitude <= 0) return;
 
-        var angle = Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection) + _destinationAngleOffset;
-        rotationVisualContainer.rotation = Quaternion.Lerp(rotationVisualContainer.rotation, Quaternion.Euler(0, 0, angle), rotationSpeed * Time.fixedDeltaTime);
+        var angle = 0.0f;
+        if(HasTarget())
+        {
+            angle = Vector2.SignedAngle(Vector2.right, _target.transform.position - transform.position) + _destinationAngleOffset;
+        }
+        else
+        {
+            angle = Vector2.SignedAngle(Vector2.right, _inputManager.RotateDirection) + _destinationAngleOffset;
+        }
+
+        rotationContainer.rotation = Quaternion.Lerp(rotationContainer.rotation, Quaternion.Euler(0, 0, angle), rotationSpeed * Time.fixedDeltaTime);
 
         if (Mathf.Abs(angle) >= 90.0f && !_isFlip || Mathf.Abs(angle) < 90.0f && _isFlip)
             _canFlipCount++;
@@ -69,12 +81,16 @@ public class RotatableHuman : Human
             _currentStaticPartScale.x *= -1;
         }
 
-        rotationVisualContainer.localScale = _currentRotationPartScale;
+        rotationContainer.localScale = _currentRotationPartScale;
         staticVisualContainer.localScale = _currentStaticPartScale;
     }
 
     protected override void SkillAction()
     {
+        UpdateTarget();
+
+        if (!HasTarget()) return;
+
         shooterController.CheckShoot();
     }
 
@@ -113,5 +129,17 @@ public class RotatableHuman : Human
             newStartHealth += startHealth * rotatableHumanHpUpSkillConfig.hpFactorMultiplier / 100.0f;
 
         Health = (int) newStartHealth;
+    }
+
+    private void UpdateTarget()
+    {
+        _target = enemyDetectionController.GetNearestEnemy();
+
+        aimHighlightSpriteRenderer.gameObject.SetActive(HasTarget());
+    }
+
+    private bool HasTarget()
+    {
+        return _target != null;
     }
 }

@@ -6,12 +6,10 @@ using UnityEngine;
 
 public class BulletShooterController : HumanShooterController
 {
-    [Header("Bullets")]
-    [MinMaxSlider(0.0f, 90.0f)]
-    [SerializeField] private Vector2 randomBulletAngleOffset = Vector2.up;
+    [SerializeField] private float randomBulletAngleOffset = 30;
 
     [Space(10)]
-    [SerializeField] private Transform bulletContainer;
+    [SerializeField] private Transform shootOriginPoint;
     [SerializeField] private Bullet bulletPrefab;
 
     public override void CheckShoot()
@@ -27,9 +25,9 @@ public class BulletShooterController : HumanShooterController
     {
         base.Shoot();
 
-        var bullet = Instantiate(bulletPrefab, bulletContainer.position, Quaternion.identity);
-        var angleOffset = Random.Range(randomBulletAngleOffset.x, randomBulletAngleOffset.y);
-        var direction = Quaternion.Euler(0.0f, 0.0f, angleOffset) * bulletContainer.right;
+        var bullet = Instantiate(bulletPrefab, shootOriginPoint.position, Quaternion.identity);
+        var angleOffset = Random.Range(-randomBulletAngleOffset, randomBulletAngleOffset);
+        var direction = Quaternion.Euler(0.0f, 0.0f, angleOffset) * shootOriginPoint.right;
 
         var bulletDamage = CalculateDamage();
 
